@@ -1,0 +1,15 @@
+DeleteMap.lua
+UI.lua
+SkipTutorial.lua
+ReturnAFK.lua
+SettingsGame.lua
+ClaimItem.lua
+EquipUnits.lua
+BuyItem.lua
+UnitInventory.lua
+Sell.lua
+EntryMap.lua
+Farm.lua
+SkipAndRetry.lua
+Exit.lua
+AntiAFK.lua
