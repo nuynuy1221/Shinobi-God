@@ -2,7 +2,7 @@ if not game:IsLoaded() then
     game.Loaded:Wait()
 end
 
-local repo = "https://raw.githubusercontent.com/nuynuy1221/Test-From-Cluade/refs/heads/main/"
+local repo = "https://raw.githubusercontent.com/nuynuy1221/Shinobi-God/refs/heads/main/"
 local index = "Index.txt"
 
 local function fetch(url)
