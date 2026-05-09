@@ -127,26 +127,6 @@ local function firePrompt(prompt)
 end
 
 -- ======================
--- Shrine
--- ======================
-local function buyFromShrine(shrineName, index)
-    local map = workspace:FindFirstChild("Map")
-    if not map then return end
-    local interactions = map:FindFirstChild("Interactions")
-    if not interactions then return end
-    local shrine = interactions:FindFirstChild(shrineName)
-    if not shrine then return end
-    local node = shrine:FindFirstChild(tostring(index))
-    if not node then return end
-    local prompt = node:FindFirstChild("ProximityPrompt")
-    firePrompt(prompt)
-end
-
-local function buyGuts()    buyFromShrine("UnitShrine_RabbitHero", 1) end
-local function buyWagon()   buyFromShrine("UnitShrine_Sprintwagon", 1) end
-local function buyTakaroda() buyFromShrine("UnitShrine_Takaroda", 1) end
-
--- ======================
 -- PLACE UNIT
 -- ======================
 local function placeUnit(name, id, position, slot)
@@ -315,48 +295,40 @@ local function findUnitUUID(unitName)
 end
 
 -- ======================
--- LANES / BOX / BARRICADE / MONACH
+-- BUY FORTUNE
 -- ======================
-local function buyLane(num)
-    firePrompt(workspace.Map.Interactions["PurchaseLane"..num].Part.ProximityPrompt)
+
+local function buyFortuneTrait()
+    local Mo = {
+        [1] = "Purchase",
+        [2] = "FortuneTrait"
+    }
+    game:GetService("ReplicatedStorage")
+        :WaitForChild("Networking")
+        :WaitForChild("SpringEvent")
+        :WaitForChild("ShopEvent")
+        :FireServer(unpack(Mo))
 end
 
-local function buyBox()
-    firePrompt(workspace.Map.Interactions.MysteryBox1.CrateBottom.default.ProximityPrompt)
+-- ======================
+-- BUY FORTUNE
+-- ======================
+
+local function buyMonachTrait()
+    local FT = {
+        [1] = "Purchase",
+        [2] = "MonachTrait"
+    }
+    game:GetService("ReplicatedStorage")
+        :WaitForChild("Networking")
+        :WaitForChild("SpringEvent")
+        :WaitForChild("ShopEvent")
+        :FireServer(unpack(FT))
 end
 
-local function buyBarricade(num)
-    firePrompt(workspace.Map.Interactions["Barricade"..num].default.ProximityPrompt)
-end
-
-local function startBarricadeLoop()
-    if BarricadeLoopRunning then return end
-    BarricadeLoopRunning = true
-    BarricadeLoopThread = task.spawn(function()
-        while BarricadeLoopRunning do
-            for i = 1, 3 do
-                buyBarricade(i)
-                task.wait(0.3)
-            end
-            for i = 1, 20 do
-                if not BarricadeLoopRunning then return end
-                task.wait(1)
-            end
-        end
-    end)
-    print("🧱 เริ่ม Auto ซื้อ Barricade ทุก 20 วินาที")
-end
-
-local function stopBarricadeLoop()
-    if not BarricadeLoopRunning then return end
-    BarricadeLoopRunning = false
-    BarricadeLoopThread = nil
-    print("🛑 หยุด Auto ซื้อ Barricade (Wave 0)")
-end
-
-local function buyMonach()
-    firePrompt(workspace.Map.Interactions.PackATrait1["Cube.005"].ProximityPrompt)
-end
+-- ======================
+-- MONACH
+-- ======================
 
 local function applyMonachToUnit(unitName, limit)
     limit = limit or math.huge
@@ -563,65 +535,94 @@ task.spawn(function()
         -- WAVE 1
         if wave >= 1 and not Executed[1] then
             Executed[1] = true
-            buyGuts()
-            buyGuts()
-            task.wait(1)
-        end
+            local Wall1 = {
+                [1] = 2,
+                [2] = 2
+            }
 
-        if wave >= 1 and not ExecutedGutReady1 then
-            placeUnit("Rabbit Hero (Guts)", "364:Evolved", Vector3.new(20.8433,252.5818,95.2065), 1)
+            game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("SpringEvent"):WaitForChild("PlaceWall"):FireServer(unpack(Wall1))
+
             task.wait(1)
-            placeUnit("Rabbit Hero (Guts)", "364:Evolved", Vector3.new(20.6082,252.5819,99.6623), 2)
-            task.wait(1.5)
+
+            local Wall2 = {
+                [1] = 2,
+                [2] = 4
+            }
+
+            game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("SpringEvent"):WaitForChild("PlaceWall"):FireServer(unpack(Wall2))
+
+            task.wait(1)
+
+            placeUnit("Strongest Shinobi (Martial)", "407:Evolved", Vector3.new(-206.64663696289062, 289.5259704589844, -296.1669616699219), 1, 3)
+            task.wait(1)
+            placeUnit("Strongest Shinobi (Martial)", "407:Evolved", Vector3.new(-206.44752502441406, 289.5259704589844, -294.2572326660156), 2, 3)
+            task.wait(1)
+            placeUnit("Strongest Shinobi (Martial)", "407:Evolved", Vector3.new(-206.68373107910156, 289.5259704589844, -292.1937255859375), 3, 3)
+            task.wait(1)
+            placeUnit("Tempest Pirate (Navigator)", "343:Evolved", Vector3.new(-204.38978576660156, 289.50933837890625, -326.347412109375), 4, 5)
+            task.wait(1)
+            game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("SpringEvent"):WaitForChild("ConfirmPlacement"):FireServer()
         end
 
         -- WAVE 2
         if wave >= 2 and not Executed[2] then
             Executed[2] = true
-            ExecutedGutReady1 = true
-            buyGuts()
-            buyGuts()
-            placeUnit("Rabbit Hero (Guts)", "364:Evolved", Vector3.new(18.577674865722656,252.5818634033203,97.36162567138672), 3)
-        end
 
-        if wave >= 2 and not ExecutedGutReady2 then
-            placeUnit("Rabbit Hero (Guts)", "364:Evolved", Vector3.new(18.577674865722656,252.5818634033203,97.36162567138672), 3)
-            task.wait(1.5)
+            placeUnit("Takaroda", "343:Evolved", Vector3.new(-202.53758239746094, 289.5093078613281, -326.4234313964844), 5, 6)
+            task.wait(1)
+            placeUnit("Devoted Demon (Obsessed)", "402:Evolved", Vector3.new(-204.83383178710938, 289.5259704589844, -296.1212463378906), 6, 2)
+            task.wait(1)
+            placeUnit("Devoted Demon (Obsessed)", "402:Evolved", Vector3.new(-204.67103576660156, 289.5259704589844, -294.1499938964844), 7, 2)
+            task.wait(1)
+            placeUnit("Devoted Demon (Obsessed)", "402:Evolved", Vector3.new(-204.69192504882812, 289.5259704589844, -291.9969787597656), 8, 2)
+            task.wait(10)
+            buyFortuneTrait(); task.wait(0.4)
+            applyMonachToUnit("Tempest Pirate (Navigator)", 1); task.wait(0.3)
         end
 
         -- WAVE 3
         if wave >= 3 and not Executed[3] then
             Executed[3] = true
-            ExecutedGutReady2 = true
-            buyWagon() buyWagon() buyWagon()
-            task.wait(5)
-            -- วาง 3 Wagon slots ซ้ำ 2 รอบ
-            local wagonPositions = {
-                {Vector3.new(4.9603,251.6905,115.8387), 69},
-                {Vector3.new(2.4375,251.6905,115.3120), 70},
-                {Vector3.new(-0.7760,251.5234,115.2861), 71},
-            }
-            for _ = 1, 2 do
-                for _, wp in ipairs(wagonPositions) do
-                    placeUnit("Sprintwagon", "35", wp[1], wp[2])
-                    task.wait(1)
-                end
-                task.wait(5)
-            end
+
+            buyFortuneTrait(); task.wait(0.4)
+            applyMonachToUnit("Takaroda", 1); task.wait(0.3)
+            upgradeUnit("Takaroda", 6)
+            upgradeUnit("Tempest Pirate (Navigator)", 5)
         end
 
+        -- WAVE 4
         if wave >= 4 and not Executed[4] then
             Executed[4] = true
-            task.wait(5)
-            upgradeUnit("Sprintwagon", 4)
-        end
 
+            placeUnit("Fruit Eater (He Wins)", "404:Evolved", Vector3.new(-201.60874938964844, 289.5259704589844, -291.89398193359375), 9, 1)
+            task.wait(1)
+            placeUnit("Fruit Eater (He Wins)", "404:Evolved", Vector3.new(-201.39892578125, 289.5259704589844, -293.7369689941406), 10, 1)
+            task.wait(1)
+            placeUnit("Fruit Eater (He Wins)", "404:Evolved", Vector3.new(-201.5526123046875, 289.5259704589844, -295.5173034667969), 11, 1)
+            task.wait(1)
+        end
+        
+        -- WAVE 6
         if wave >= 6 and not Executed[6] then
             Executed[6] = true
-            task.wait(5)
-            buyLane(2)
+
+            local Wall3 = {
+                [1] = 4,
+                [2] = 6
+            }
+
+            game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("SpringEvent"):WaitForChild("PlaceWall"):FireServer(unpack(Wall3))
+
             task.wait(1)
-            buyLane(3)
+
+            local Wall4 = {
+                [1] = 3,
+                [2] = 1
+            }
+
+            game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("SpringEvent"):WaitForChild("PlaceWall"):FireServer(unpack(Wall4))
+
+            task.wait(1)
         end
 
         if wave >= 7 and not Executed[7] then
