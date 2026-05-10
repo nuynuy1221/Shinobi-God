@@ -12,7 +12,8 @@ if getgenv().Config == nil then
     getgenv().Config = {
         BuyMemoria = false,
         LockLV = nil,
-        CustomRR = false
+        CustomRR = false,
+        RestartMethod = true -- default = true (ไม่รันสคริป)
     }
 end
 
@@ -21,9 +22,22 @@ if type(Config) ~= "table" then
     Config = {
         BuyMemoria = false,
         LockLV = nil,
-        CustomRR = false
+        CustomRR = false,
+        RestartMethod = true
     }
     getgenv().Config = Config
+end
+
+if Config.RestartMethod == nil then
+    Config.RestartMethod = true
+end
+
+if Config.RestartMethod = false then
+    print("💯 เข้าฟาร์มปกติ")
+end
+
+if Config.RestartMethod ~= false then
+    return
 end
 
 -- บังคับให้เปิดได้เฉพาะ true เท่านั้น
@@ -84,22 +98,22 @@ end
 -- =========================
 -- ฟังก์ชัน WinterEvent
 -- =========================
-local function GoWinter()
-    print("🔥 Level ≥ 11 → WinterEvent")
+local function GoSpring()
+    print("🔥 Level ≥ 11 → Spring Event")
     
-    local winterEvent = rep:WaitForChild("Networking"):WaitForChild("Winter"):WaitForChild("WinterLTMEvent")
+    local SpringEvent = rep:WaitForChild("Networking"):WaitForChild("SpringEvent"):WaitForChild("Teleport")
     local lobbyEvent = rep:WaitForChild("Networking"):WaitForChild("LobbyEvent")
     
-    pcall(function() winterEvent:FireServer("Create", "Normal") end)
+	pcall(function() SpringEvent:FireServer("Create") end)
     task.wait(3)
     pcall(function() lobbyEvent:FireServer("StartMatch") end)
 end
 
 -- =========================
--- เช็ค Presents26 (ทำให้ง่ายขึ้น)
+-- เช็ค Flowers26 (ทำให้ง่ายขึ้น)
 -- =========================
-local function getPresents26()
-    local value = player:GetAttribute("Presents26")
+local function getFlowers26()
+    local value = player:GetAttribute("Flowers26")
     if value ~= nil then
         return tonumber(value) or 0
     end
@@ -107,9 +121,9 @@ local function getPresents26()
 end
 
 -- =========================
--- เช็ค Ice Queen (Release)
+-- เช็ค Shinobi God
 -- =========================
-local function hasIceQueen()
+local function hasShinobiGod()
 
     if game.PlaceId ~= 16146832113 then
         return false
@@ -128,7 +142,7 @@ local function hasIceQueen()
     until items or tick() - start > 15
 
     if not items then
-        warn("[IceQueen] ❌ Items not loaded")
+        warn("[Shinobi God] ❌ Items not loaded")
         return false
     end
 
@@ -138,8 +152,8 @@ local function hasIceQueen()
                 local holder = uuid:FindFirstChild("Container")
                     and uuid.Container:FindFirstChild("Holder")
 
-                if holder and holder:FindFirstChild("Ice Queen (Release)") then
-                    print("✅ FOUND Ice Queen (Release)")
+                if holder and holder:FindFirstChild("Shinobi God") then
+                    print("✅ FOUND Shinobi God")
                     return true
                 end
             end
@@ -149,20 +163,6 @@ local function hasIceQueen()
     return false
 end
 
--- =========================
--- เช็ค Memoria จาก Attribute (เสถียรกว่า GUI)
--- =========================
-local function hasIceQueenRest()
-
-    local value = player:GetAttribute("WinterMemoriaVanguardPityCompleted")
-
-    if value == true then
-        print("✅ FOUND Ice Queen's Rest (Attribute)")
-        return true
-    end
-
-    return false
-end
 
 -- =========================
 -- Summon Event
@@ -173,12 +173,12 @@ local summonEvent = rep:WaitForChild("Networking")
     :WaitForChild("Units")
     :WaitForChild("SummonEvent")
 
-local summonArgs = {"SummonMany", "Winter26", 10}
-local summonArgs50 = {"SummonMany", "Winter26", 50}
+local summonArgs = {"SummonMany", "Spring26", 10}
+local summonArgs50 = {"SummonMany", "Spring26", 50}
 
 -- 🔹 Summon Memoria
-local memoriaArgs = {"SummonMany", "WinterMemoria", 10}
-local memoriaArgs50 = {"SummonMany", "WinterMemoria", 50}
+local memoriaArgs = {"SummonMany", "SpringMemoria", 10}
+local memoriaArgs50 = {"SummonMany", "SpringMemoria", 50}
 
 -- =========================
 -- Click Enemy Index Milestone
@@ -477,16 +477,14 @@ task.spawn(function()
         local success, err = pcall(function()
             
             local level = getLevel()
-            local presents = getPresents26()
+            local Flowers26 = getFlowers26()
 
-            local hasUnit = hasIceQueen()
-            local hasMemoria = hasIceQueenRest()
+            local hasUnit = hasShinobiGod()
 
             print(
                 "🧠 Decision | Level:", level,
-                "| Presents:", presents,
+                "| Flowers26:", Flowers26,
                 "| Has Unit:", hasUnit,
-                "| Has Memoria:", hasMemoria,
                 "| BuyMemoria:", Config.BuyMemoria
             )
                     
@@ -508,26 +506,26 @@ task.spawn(function()
             -- ❌ ไม่เข้า Story แล้ว ไม่สน Level
             -- ทำแต่ Winter เท่านั้น
 
-            if hasUnit and hasMemoria then
+            if hasUnit then
                 if not Config.LockLV then
-                    if presents >= 1500 and presents < 7500 then
+                    if Flowers26 >= 1500 and Flowers26 < 7500 then
                         summonEvent:FireServer(unpack(summonArgs))
                         task.wait(0.1)
-                    elseif presents >= 7500 then
+                    elseif Flowers26 >= 7500 then
                         summonEvent:FireServer(unpack(summonArgs50))
                         task.wait(0.1)
                         clickCenterScreenSafe()
-                    else        
+                    else
                         print("✅ มีของครบอยู่แล้ว (ไม่ล็อคเลเวล)")
                         DelayCheck = 600
                         task.wait(60)
-                        GoWinter()
+                        GoSpring()
                     end
                 elseif level >= Config.LockLV then
-                    if presents >= 1500 and presents < 7500 then
+                    if Flowers26 >= 1500 and Flowers26 < 7500 then
                         summonEvent:FireServer(unpack(summonArgs))
                         task.wait(0.1)
-                    elseif presents >= 7500 then
+                    elseif Flowers26 >= 7500 then
                         summonEvent:FireServer(unpack(summonArgs50))
                         task.wait(0.1)
                         clickCenterScreenSafe()
@@ -535,82 +533,37 @@ task.spawn(function()
                         print("🔒 ถึงเลเวลที่ล็อคแล้ว อยู่เฉยๆ")
                         DelayCheck = 600
                         task.wait(60)
-                        GoWinter()
+                        GoSpring()
                     end
                 else
-                    if presents >= 1500 and presents < 7500 then
+                    if Flowers26 >= 1500 and Flowers26 < 7500 then
                         summonEvent:FireServer(unpack(summonArgs))
                         task.wait(0.1)
-                    elseif presents >= 7500 then
+                    elseif Flowers26 >= 7500 then
                         summonEvent:FireServer(unpack(summonArgs50))
                         task.wait(0.1)
                         clickCenterScreenSafe()
                     else
                         print("📈 เวลไม่ถึง ล็อคไว้ ต้องไปฟาร์ม")
                         task.wait(60)
-                        GoWinter()
-                    end
-                end
-            elseif presents >= 1500 and presents < 7500 then
-                if hasMemoria and not hasUnit then
-                    print("⁉️ มีแค่ Memoria")
-                    summonEvent:FireServer(unpack(summonArgs))
-                    task.wait(0.1)
-                elseif not hasMemoria and hasUnit then
-                    if Config.BuyMemoria then
-                        print("⁉️ มีแค่ Ice Queen (Release)")
-                        summonEvent:FireServer(unpack(memoriaArgs))
-                        task.wait(0.1)
-                    else
-                        print("❌ ไม่มี Config Memoria")
-                    end
-                else
-                    print("❌ ไม่มีทั้งคู่")
-
-                    if Config.BuyMemoria then
-                        print("❎ มี Config Memoria")
-                        summonEvent:FireServer(unpack(memoriaArgs))
-                        task.wait(1)
-                    else
-                        print("❎ ไม่มี Config Memoria")
-                        summonEvent:FireServer(unpack(summonArgs))
-                        task.wait(1)
-                    end
-                end
-            elseif presents >= 7500 then
-                if hasMemoria and not hasUnit then
-                    print("⁉️ มีแค่ Memoria")
-                    summonEvent:FireServer(unpack(summonArgs50))
-                    task.wait(0.1)
-                    clickCenterScreenSafe()
-                elseif not hasMemoria and hasUnit then
-                    if Config.BuyMemoria then
-                        print("⁉️ มีแค่ Ice Queen (Release)")
-                        summonEvent:FireServer(unpack(memoriaArgs50))
-                        task.wait(0.1)
-                        clickCenterScreenSafe()
-                    else
-                        print("❌ ไม่มี Config Memoria")
-                    end
-                else
-                    print("❌ ไม่มีทั้งคู่")
-
-                    if Config.BuyMemoria then
-                        print("❎ มี Config Memoria")
-                        summonEvent:FireServer(unpack(memoriaArgs50))
-                        task.wait(1)
-                        clickCenterScreenSafe()
-                    else
-                        print("❎ ไม่มี Config Memoria")
-                        summonEvent:FireServer(unpack(summonArgs50))
-                        task.wait(1)
-                        clickCenterScreenSafe()
+                        GoSpring()
                     end
                 end
             else
-                print("❌ ไม่มี Presents ไปฟาร์ม")
-                task.wait(60)
-                GoWinter()
+                if Flowers26 >= 1500 and Flowers26 < 7500 then
+                    print("❌ ไม่มี unit")
+                    summonEvent:FireServer(unpack(summonArgs))
+                    task.wait(0.1)
+                elseif Flowers26 >= 7500 then
+                    print("❌ ไม่มี unit")
+                    summonEvent:FireServer(unpack(summonArgs50))
+                    task.wait(0.1)
+                    clickCenterScreenSafe()
+                else
+                    print("❌ ไม่มี Flowers26 ไปฟาร์ม")
+                    task.wait(60)
+                    GoSpring()
+                end
             end
         end)
 
