@@ -16,6 +16,20 @@ local VirtualInputManager = game:GetService("VirtualInputManager")
 
 local player = Players.LocalPlayer
 
+-- ตรวจสอบ RestartMethod
+local Config = getgenv().Config or {}
+if Config.RestartMethod == nil then
+    Config.RestartMethod = true -- default = true
+end
+
+if Config.RestartMethod = true then
+    print("⏩ ฟาร์มแบบเร็วจี๋")
+end
+
+if Config.RestartMethod ~= true then
+    return
+end
+
 -- Cache network references ครั้งเดียว (เดิมบาง loop เรียก WaitForChild ซ้ำ)
 local Networking  = ReplicatedStorage:WaitForChild("Networking")
 local UnitEvent   = Networking:WaitForChild("UnitEvent")
