@@ -12,7 +12,8 @@ if getgenv().Config == nil then
     getgenv().Config = {
         BuyMemoria = false,
         LockLV = nil,
-        CustomRR = false
+        CustomRR = false,
+        RestartMethod = true
     }
 end
 
@@ -21,7 +22,8 @@ if type(Config) ~= "table" then
     Config = {
         BuyMemoria = false,
         LockLV = nil,
-        CustomRR = false
+        CustomRR = false,
+        RestartMethod = true
     }
     getgenv().Config = Config
 end
@@ -33,6 +35,19 @@ Config.CustomRR = (Config.CustomRR == true)
 -- LockLV ต้องเป็นตัวเลขเท่านั้น
 if type(Config.LockLV) ~= "number" then
     Config.LockLV = nil
+end
+
+if Config.RestartMethod == nil then
+    Config.RestartMethod = true
+end
+
+-- ต้องเป็น true เท่านั้นถึงรัน
+if Config.RestartMethod = true then
+    print("⏩ เข้าฟาร์มแบบ Restart")
+end
+
+if Config.RestartMethod ~= true then
+    return
 end
 
 local Players = game:GetService("Players")
