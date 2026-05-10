@@ -62,10 +62,10 @@ task.spawn(function()
     end
 
     local codes = {
-        "150KYT",
-        "LATECUSTOMLEVEL",
-        "MOONLESS",
-        "ExtraWeek",
+        "HeHasArrived",
+        "BumBum",
+        "Spring26",
+        "SorryForAutoSell",
         "Shinobi",
         "HeIsComing",
         "TooMuchPain"
