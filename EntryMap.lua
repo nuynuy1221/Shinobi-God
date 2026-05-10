@@ -506,6 +506,7 @@ task.spawn(function()
     				[1] = "StartMatch"
 				}
 				game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("LobbyEvent"):FireServer(unpack(ST))
+				return
 			end
 
             -- ❌ ไม่เข้า Story แล้ว ไม่สน Level
