@@ -46,7 +46,7 @@ end
 -- =========================
 -- CONFIG
 -- =========================
-local TARGET_PRESENTS = 3000000   -- ✅ จำนวน Presents ที่ต้องการ
+local TARGET_PRESENTS = 150000   -- ✅ จำนวน Presents ที่ต้องการ
 local CHECK_DELAY = 60           -- วินาทีต่อการเช็ค
 local EXIT_DELAY = 4             -- หน่วงก่อนออก Lobby
 
@@ -54,6 +54,28 @@ local EXIT_DELAY = 4             -- หน่วงก่อนออก Lobby
 -- Loop เช็ค Presents
 -- =========================
 local alreadyExit = false
+
+-- ✅ เช็คเลเวลตอนแรก ถ้าต่ำกว่า 30 ให้ watch ด้วย
+local initialLevel = player:GetAttribute("Level") or 0
+local shouldWatchLevel = initialLevel < 30
+
+if shouldWatchLevel then
+    task.spawn(function()
+        while true do
+            task.wait(10)
+            local lv = player:GetAttribute("Level") or 0
+            if lv >= 30 then
+                warn("🎓 Level ถึง 30 (จากที่เริ่มต่ำกว่า) → TP กลับ Lobby")
+                pcall(function()
+                    TeleportEvent:FireServer("Lobby")
+                end)
+                break
+            end
+        end
+    end)
+else
+    print("✅ เริ่มต้นเลเวล " .. initialLevel .. " ≥ 30 → ไม่ต้อง watch")
+end
 
 task.spawn(function()
     while true do
