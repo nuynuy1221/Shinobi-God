@@ -469,7 +469,7 @@ task.spawn(function()
 
             print(
                 "🧠 Decision | Level:", level,
-                "| Flowers26:", presents,
+                "| Flowers26:", Flowers26,
                 "| Has Unit:", hasUnit,
                 "| BuyMemoria:", Config.BuyMemoria
             )
