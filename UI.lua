@@ -85,7 +85,7 @@ end
 
 local function getLevel()    return getAttr({"Level","level","PlayerLevel","currentLevel"}) end
 local function getFlowers26() return getAttr({"Flowers26","flowers26"}) end
-local function hasMemoria()  return player:GetAttribute("WinterMemoriaVanguardPityCompleted") == true end
+local function hasMemoria()  return player:GetAttribute("Spring26MemoriaVanguardPityCompleted") == true end
 
 -- =========================
 -- checkShinobi God — throttled loop ทุก 3 วิ
