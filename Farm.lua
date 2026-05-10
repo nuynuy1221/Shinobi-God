@@ -547,6 +547,7 @@ local function startStoryFarm()
 
             if wave >= 1 and not StoryExecuted[1] then
                 StoryExecuted[1] = true
+                inGame = true
                 print("📍 [Story] Wave 1 - วาง units")
                 placeUnit("Bounty Hunter", "347",
                     Vector3.new(431.1807556152344, 3.338402032852173, -358.1429138183594), 2)
