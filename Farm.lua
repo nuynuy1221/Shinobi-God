@@ -532,6 +532,19 @@ local function startStoryFarm()
             -- ============ วางตรงนี้เลย ============
             -- ตัวอย่าง: ปรับ positions / unit ตามที่ต้องการ
 
+            -- RESET (WAVE 0)
+            if wave == 0 then
+                if inGame then
+                    warn("🔄 Wave 0 → รีรอบเกม รีเซ็ตทุกอย่าง")
+                    Executed = {}
+                    local Skip = {
+                         [1] = "Skip"
+                     }
+
+                     game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("SkipWaveEvent"):FireServer(unpack(Skip))
+                 end
+             end
+
             if wave >= 1 and not StoryExecuted[1] then
                 StoryExecuted[1] = true
                 print("📍 [Story] Wave 1 - วาง units")
