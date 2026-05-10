@@ -536,7 +536,7 @@ local function startStoryFarm()
             if wave == 0 then
                 if inGame then
                     warn("🔄 Wave 0 → รีรอบเกม รีเซ็ตทุกอย่าง")
-                    Executed = {}
+                    StoryExecuted = {}
                     local Skip = {
                          [1] = "Skip"
                      }
