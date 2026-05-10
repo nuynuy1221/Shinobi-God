@@ -28,6 +28,15 @@ if type(Config) ~= "table" then
     getgenv().Config = Config
 end
 
+-- บังคับให้เปิดได้เฉพาะ true เท่านั้น
+Config.BuyMemoria = (Config.BuyMemoria == true)
+Config.CustomRR = (Config.CustomRR == true)
+
+-- LockLV ต้องเป็นตัวเลขเท่านั้น
+if type(Config.LockLV) ~= "number" then
+    Config.LockLV = nil
+end
+
 if Config.RestartMethod == nil then
     Config.RestartMethod = true
 end
@@ -38,15 +47,6 @@ end
 
 if Config.RestartMethod ~= false then
     return
-end
-
--- บังคับให้เปิดได้เฉพาะ true เท่านั้น
-Config.BuyMemoria = (Config.BuyMemoria == true)
-Config.CustomRR = (Config.CustomRR == true)
-
--- LockLV ต้องเป็นตัวเลขเท่านั้น
-if type(Config.LockLV) ~= "number" then
-    Config.LockLV = nil
 end
 
 local Players = game:GetService("Players")
