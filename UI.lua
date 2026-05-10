@@ -55,7 +55,7 @@ end
 
 local userLabel       = createBar("User",       0.18, Color3.fromRGB(52, 152, 219),  "🧑")
 local levelLabel      = createBar("Level",      0.36, Color3.fromRGB(46, 204, 113),  "🏆")
-local Flowers26Label = createBar("Flowers26", 0.54, Color3.fromRGB(241, 196, 15),  "🎁")
+local Flowers26Label = createBar("Flowers26", 0.54, Color3.fromRGB(241, 196, 15),  "💐")
 local ShinobiGodLabel   = createBar("Shinobi God",   0.72, Color3.fromRGB(231, 76, 60),   "👑")
 local memoriaLabel    = createBar("Memoria",    0.90, Color3.fromRGB(155, 89, 182),  "🃏")
 
@@ -68,8 +68,8 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
     end
 end)
 
-if player:GetAttribute("HasIceQueen") == nil then
-    player:SetAttribute("HasIceQueen", false)
+if player:GetAttribute("HasShinobiGod") == nil then
+    player:SetAttribute("HasShinobiGod", false)
 end
 
 -- =========================
@@ -138,7 +138,7 @@ RunService.RenderStepped:Connect(function()
         userLabel.Text        = "🤖 User : "     .. player.Name
         levelLabel.Text       = "⬆️ Level : "    .. getLevel()
         Flowers26Label.Text  = "💐 Flowers26 : " .. getFlowers26()
-        ShinobiGodLabel.Text    = "👑 Ice Queen : " .. (cachedHasShinobiGod and "✅" or "❌")
+        ShinobiGodLabel.Text    = "👑 Shinobi God : " .. (cachedHasShinobiGod and "✅" or "❌")
         memoriaLabel.Text     = "🃏 Memoria : "   .. (hasMemoria() and "✅" or "❌")
     end)
 end)
