@@ -51,7 +51,7 @@ end
 -- ================= BUY TRAIT REROLL =================
 if Config.BuyTraitReroll == true then
 	buyItem(
-		"Winter Shop",
+		"Spring Shop",
 		"TraitRerolls",
 		5,   -- ซื้อครั้งละ 5
 		40   -- 40 ครั้ง
@@ -64,7 +64,7 @@ end
 -- ================= BUY MEMORIA SHARDS =================
 if Config.BuyMemoriaShards == true then
 	buyItem(
-		"Winter Shop",
+		"Spring Shop",
 		"MemoriaShards",
 		5,   -- ซื้อครั้งละ 5
 		40   -- 40 ครั้ง
