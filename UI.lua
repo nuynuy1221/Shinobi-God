@@ -55,8 +55,8 @@ end
 
 local userLabel       = createBar("User",       0.18, Color3.fromRGB(52, 152, 219),  "🧑")
 local levelLabel      = createBar("Level",      0.36, Color3.fromRGB(46, 204, 113),  "🏆")
-local Flowers26Label = createBar("Presents26", 0.54, Color3.fromRGB(241, 196, 15),  "🎁")
-local ShinobiGodLabel   = createBar("IceQueen",   0.72, Color3.fromRGB(231, 76, 60),   "👑")
+local Flowers26Label = createBar("Flowers26", 0.54, Color3.fromRGB(241, 196, 15),  "🎁")
+local ShinobiGodLabel   = createBar("Shinobi God",   0.72, Color3.fromRGB(231, 76, 60),   "👑")
 local memoriaLabel    = createBar("Memoria",    0.90, Color3.fromRGB(155, 89, 182),  "🃏")
 
 -- Toggle HUD (B)
@@ -137,8 +137,8 @@ RunService.RenderStepped:Connect(function()
     pcall(function()
         userLabel.Text        = "🤖 User : "     .. player.Name
         levelLabel.Text       = "⬆️ Level : "    .. getLevel()
-        Flowers26Label.Text  = "💐 Flowers26 : " .. getPresents26()
-        ShinobiGodLabel.Text    = "👑 Ice Queen : " .. (cachedHasIceQueen and "✅" or "❌")
+        Flowers26Label.Text  = "💐 Flowers26 : " .. getFlowers26()
+        ShinobiGodLabel.Text    = "👑 Ice Queen : " .. (cachedHasShinobiGod and "✅" or "❌")
         memoriaLabel.Text     = "🃏 Memoria : "   .. (hasMemoria() and "✅" or "❌")
     end)
 end)
