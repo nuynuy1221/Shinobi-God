@@ -77,7 +77,7 @@ task.spawn(function()
                 end)
             end
         elseif lv >= Config.LockLV then
-            if presents >= TARGET_PRESENTS and not alreadyExit then
+            if Flowers26 >= TARGET_PRESENTS and not alreadyExit then
                 alreadyExit = true
                 warn("✅ Flowers26 ครบ (" .. presents .. ") → ออก Lobby ใน " .. EXIT_DELAY .. " วินาที")
 
