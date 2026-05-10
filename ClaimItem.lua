@@ -97,9 +97,9 @@ for day = 1, 28 do
     safeFire(DailyRewardEvent, {"Claim", {"Anniversary", day}})
 end
 
---================ DAILY REWARD (WINTER) ===================
+--================ DAILY REWARD (Spring26) ===================
 for day = 1, 28 do
-    safeFire(DailyRewardEvent, {"Claim", {"Winter", day}})
+    safeFire(DailyRewardEvent, {"Claim", {"Spring26", day}})
 end
 
 --================ MILESTONES ===================
