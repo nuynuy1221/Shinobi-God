@@ -630,6 +630,7 @@ task.spawn(function()
                 }
 
                 game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("SkipWaveEvent"):FireServer(unpack(Skip))
+            end
         end
 
         if not inGame and wave >= 1 then
@@ -645,6 +646,8 @@ task.spawn(function()
             }
 
             game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("MatchRestartSettingEvent"):FireServer(unpack(Vote))
+
+            game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("SpringEvent"):WaitForChild("ClaimAllSpringEventLevels"):FireServer()
         end
     end
 end)
