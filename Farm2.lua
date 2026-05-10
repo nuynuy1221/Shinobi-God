@@ -16,6 +16,20 @@ local VirtualInputManager = game:GetService("VirtualInputManager")
 
 local player = Players.LocalPlayer
 
+-- ตรวจสอบ RestartMethod
+local Config = getgenv().Config or {}
+if Config.RestartMethod == nil then
+    Config.RestartMethod = true -- default = true
+end
+
+if Config.RestartMethod = false then
+    print("💯 ฟาร์มปกติ")
+end
+
+if Config.RestartMethod ~= false then
+    return
+end
+
 -- Cache network references ครั้งเดียว (เดิมบาง loop เรียก WaitForChild ซ้ำ)
 local Networking  = ReplicatedStorage:WaitForChild("Networking")
 local UnitEvent   = Networking:WaitForChild("UnitEvent")
@@ -317,7 +331,7 @@ end
 local function buyMonachTrait()
     local FT = {
         [1] = "Purchase",
-        [2] = "MonachTrait"
+        [2] = "MonarchTrait"
     }
     game:GetService("ReplicatedStorage")
         :WaitForChild("Networking")
@@ -517,13 +531,10 @@ task.spawn(function()
             if inGame then
                 warn("🔄 Wave 0 → รีรอบเกม รีเซ็ตทุกอย่าง")
                 Executed = {}
-                ExecutedGutReady1 = false
-                ExecutedGutReady2 = false
                 MonachApplied = {}
                 inGame = false
                 unitManagerOpened = false
             end
-            stopBarricadeLoop()
             continue
         end
 
@@ -583,7 +594,7 @@ task.spawn(function()
         -- WAVE 3
         if wave >= 3 and not Executed[3] then
             Executed[3] = true
-
+            task.wait(15)
             buyFortuneTrait(); task.wait(0.4)
             applyMonachToUnit("Takaroda", 1); task.wait(0.3)
             upgradeUnit("Takaroda", 6)
@@ -623,386 +634,146 @@ task.spawn(function()
             game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("SpringEvent"):WaitForChild("PlaceWall"):FireServer(unpack(Wall4))
 
             task.wait(1)
-        end
-
-        if wave >= 7 and not Executed[7] then
-            Executed[7] = true
-            buyTakaroda()
-            placeUnitBurst("Takaroda", "47", {Vector3.new(-13.5438,251.5234,91.1173)}, 7)
+            game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("SpringEvent"):WaitForChild("ConfirmPlacement"):FireServer()
         end
 
         if wave >= 8 and not Executed[8] then
             Executed[8] = true
-            upgradeUnit("Takaroda", 6)
+            buyMonachTrait(); task.wait(0.4)
+            applyMonachToUnit("Strongest Shinobi (Martial)", 1); task.wait(0.3)
+            task.wait(5)
+            buyMonachTrait(); task.wait(0.4)
+            applyMonachToUnit("Strongest Shinobi (Martial)", 1); task.wait(0.3)
+            task.wait(5)
+            buyMonachTrait(); task.wait(0.4)
+            applyMonachToUnit("Strongest Shinobi (Martial)", 1); task.wait(0.3)
         end
 
         if wave >= 9 and not Executed[9] then
             Executed[9] = true
-            buyFromShrine("UnitShrine_TempestPirate", 1)
-            task.wait(3)
-            placeUnitBurst("Tempest Pirate (Navigator)", "343:Evolved", {Vector3.new(20.609821319580078,251.86569213867188,104.9205322265625)}, 8, 2)
-            task.wait(1)
-            buyFromShrine("UnitShrine_TempestPirate", 1)
-            task.wait(3)
-            placeUnitBurst("Tempest Pirate (Navigator)", "343:Evolved", {Vector3.new(20.609821319580078,251.86569213867188,104.9205322265625)}, 8, 2)
+            buyMonachTrait(); task.wait(0.4)
+            applyMonachToUnit("Devoted Demon (Obsessed)", 1); task.wait(0.3)
+            task.wait(5)
+            buyMonachTrait(); task.wait(0.4)
+            applyMonachToUnit("Devoted Demon (Obsessed)", 1); task.wait(0.3)
+            task.wait(5)
+            buyMonachTrait(); task.wait(0.4)
+            applyMonachToUnit("Devoted Demon (Obsessed)", 1); task.wait(0.3)
         end
 
-        if wave >= 10 and not Executed["TP6"] then
-            Executed["TP6"] = true
-            upgradeUnit("Tempest Pirate (Navigator)", 6)
+        if wave >= 10 and not Executed[10] then
+            Executed[10] = true
+            buyMonachTrait(); task.wait(0.4)
+            applyMonachToUnit("Fruit Eater (He Wins)", 1); task.wait(0.3)
+            task.wait(5)
+            buyMonachTrait(); task.wait(0.4)
+            applyMonachToUnit("Fruit Eater (He Wins)", 1); task.wait(0.3)
+            task.wait(5)
+            buyMonachTrait(); task.wait(0.4)
+            applyMonachToUnit("Fruit Eater (He Wins)", 1); task.wait(0.3)
         end
 
         if wave >= 11 and not Executed[11] then
             Executed[11] = true
-            upgradeUnit("Rabbit Hero (Guts)", 8)
+            local Wall5 = {
+                [1] = 4,
+                [2] = 4
+            }
+
+            game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("SpringEvent"):WaitForChild("PlaceWall"):FireServer(unpack(Wall5))
+            task.wait(1)
+            game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("SpringEvent"):WaitForChild("ConfirmPlacement"):FireServer()
+            task.wait(1)
+            local S5 = {
+                [1] = "Purchase",
+                [2] = "SkipWaves5"
+            }
+
+            game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("SpringEvent"):WaitForChild("ShopEvent"):FireServer(unpack(S5))
         end
 
         if wave >= 15 and not Executed[15] then
             Executed[15] = true
-            buyFromShrine("UnitShrine_TempestPirate", 1)
-            placeUnitBurst("Tempest Pirate (Navigator)", "343:Evolved", {Vector3.new(20.609821319580078,251.86569213867188,104.9205322265625)}, 8, 2)
+            upgradeUnit("Strongest Shinobi (Martial)", 5)
+            upgradeUnit("Devoted Demon (Obsessed)", 5)
+            upgradeUnit("Fruit Eater (He Wins)", 5)
         end
 
-        if wave >= 15 and not Executed["TP6-2"] then
-            Executed["TP6-2"] = true
-            task.wait(0.5)
-            upgradeUnit("Tempest Pirate (Navigator)", 6)
+        if wave >= 16 and not Executed[16] then
+            Executed[16] = true
+            game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("SpringEvent"):WaitForChild("ConfirmPlacement"):FireServer()
         end
 
-        if wave >= 19 and not Executed[19] then Executed[19] = true; buyModifier("FortuneCity")   end
-        if wave >= 20 and not Executed[20] then Executed[20] = true; buyModifier("EagleEyed")     end
-        if wave >= 21 and not Executed[21] then Executed[21] = true; buyModifier("HeavyHitter")   end
-        if wave >= 22 and not Executed[22] then Executed[22] = true; buyModifier("FastHands")     end
-        if wave >= 25 and not Executed[25] then Executed[25] = true; buyModifier("ArmorBeGone")   end
-
-        if wave >= 30 and not Executed[30] then
-            Executed[30] = true
-            for i = 1, 150 do buyBox(); task.wait(0.1) end
-        end
-
-        if wave >= 37 and not Executed[37] then
-            Executed[37] = true
-            upgradeUnit("Koguro (Unsealed)", 5);  task.wait(1)
-            upgradeUnit("Lich King (Ruler)", 5);  task.wait(1)
-            upgradeUnit("Iscanur (Pride)", 5);    task.wait(1)
-            upgradeUnit("Ice Queen (Release)", 5); task.wait(1)
-        end
-
-        if wave >= 44 and not Executed[44] then
-            Executed[44] = true
-            upgradeUnit("Koguro (Unsealed)", 8);  task.wait(1)
-            upgradeUnit("Lich King (Ruler)", 8);  task.wait(1)
-            upgradeUnit("Iscanur (Pride)", 8);    task.wait(1)
-            upgradeUnit("Ice Queen (Release)", 8); task.wait(1)
-        end
-
-        if wave >= 47 and not Executed[47] then
-            Executed[47] = true
-            for i = 1, 3 do
-                buyMonach(); task.wait(0.4)
-                applyMonachToUnit("Rabbit Hero (Guts)", 1); task.wait(0.3)
-            end
-        end
-
-        if wave >= 49 and not Executed[49] then
-            Executed[49] = true
-            upgradeUnit("Koguro (Unsealed)", 10); task.wait(1)
-            upgradeUnit("Lich King (Ruler)", 10); task.wait(1)
-            upgradeUnit("Iscanur (Pride)", 10);   task.wait(1)
-            upgradeUnit("Ice Queen (Release)", 10); task.wait(1)
-        end
-
-        if wave >= 50 and not Executed[50] then
-            Executed[50] = true
-            for i = 1, 100 do buyBox(); task.wait(0.1) end
-        end
-
-        if wave >= 58 and not Executed[58] then
-            Executed[58] = true
-            Networking.Units["Update 9.5"].ConfirmLichSpells:FireServer({2,3,5,19})
-        end
-
-        if wave >= 59 and not Executed[59] then
-            Executed[59] = true
-            upgradeUnit("Koguro (Unsealed)", 12); task.wait(1)
-            upgradeUnit("Lich King (Ruler)", 13); task.wait(1)
-            upgradeUnit("Iscanur (Pride)", 15);   task.wait(1)
-            upgradeUnit("Ice Queen (Release)", 15); task.wait(1)
-        end
-
-        if wave >= 62 and not Executed[62] then
-            Executed[62] = true
-            for i = 1, 3 do
-                buyMonach(); task.wait(0.4)
-                applyMonachToUnit("Rabbit Hero (Guts)", 1); task.wait(0.3)
-            end
-        end
-
-        if wave >= 63 and not Executed[63] then
-            Executed[63] = true
-            for i = 1, 10 do buyBox(); task.wait(0.1) end
-        end
-
-        if wave >= 64 and not Executed[64] then
-            Executed[64] = true
-            local monachTargets = {
-                {"Lich King (Ruler)"}, {"Koguro (Unsealed)"},
-                {"Ice Queen (Release)"}, {"Iscanur (Pride)"}
+        if wave >= 21 and not Executed[21] then
+            Executed[21] = true
+            game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("SpringEvent"):WaitForChild("ConfirmPlacement"):FireServer()
+            task.wait(1)
+            local S5 = {
+                [1] = "Purchase",
+                [2] = "SkipWaves5"
             }
-            for _, t in ipairs(monachTargets) do
-                buyMonach(); task.wait(1)
-                applyMonachToUnit(t[1], 1); task.wait(1)
-            end
+
+            game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("SpringEvent"):WaitForChild("ShopEvent"):FireServer(unpack(S5))
         end
 
-        if wave >= 65 and not Executed[65] then
-            Executed[65] = true
-            for i = 1, 10 do buyBox(); task.wait(0.1) end
+        if wave >= 25 and not Executed[25] then
+            Executed[25] = true
+            upgradeUnit("Strongest Shinobi (Martial)", 8)
+            upgradeUnit("Devoted Demon (Obsessed)", 8)
+            upgradeUnit("Fruit Eater (He Wins)", 7)
         end
 
-        if wave >= 66 and not Executed[66] then
-            Executed[66] = true
-            local iceManPositions = {
-                Vector3.new(14.536787033081055,252.58160400390625,91.04071807861328),
-                Vector3.new(12.214313507080078,252.58157348632812,90.87340545654297),
-                Vector3.new(14.403878211975098,252.5816650390625,92.87925720214844),
-                Vector3.new(11.800287246704102,253.0923614501953,93.03865051269531),
+        if wave >= 26 and not Executed[26] then
+            Executed[26] = true
+            game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("SpringEvent"):WaitForChild("ConfirmPlacement"):FireServer()
+        end
+
+        if wave >= 31 and not Executed[31] then
+            Executed[31] = true
+            game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("SpringEvent"):WaitForChild("ConfirmPlacement"):FireServer()
+            task.wait(1)
+            local S5 = {
+                [1] = "Purchase",
+                [2] = "SkipWaves5"
             }
-            for i, pos in ipairs(iceManPositions) do
-                placeUnit("Ice Manipulator (Admiral)", "361:Evolved", pos, 12 + i)
-                task.wait(1)
-            end
+
+            game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("SpringEvent"):WaitForChild("ShopEvent"):FireServer(unpack(S5))
         end
 
-        if wave >= 66 and not Executed["IM8"] then
-            Executed["IM8"] = true
-            upgradeUnit("Ice Manipulator (Admiral)", 8)
+        if wave >= 35 and not Executed[35] then
+            Executed[35] = true
+            upgradeUnit("Strongest Shinobi (Martial)", 12)
         end
 
-        if wave >= 67 and not Executed[67] then
-            Executed[67] = true
-            for i = 1, 25 do buyBox(); task.wait(0.1) end
+        if wave >= 36 and not Executed[36] then
+            Executed[36] = true
+            game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("SpringEvent"):WaitForChild("ConfirmPlacement"):FireServer()
         end
 
-        if wave >= 69 and not Executed["WB9"] then
-            Executed["WB9"] = true
-            upgradeUnit("Trash Gamer (Twin Blades)", 9)
-        end
-
-        if wave >= 70 and not Executed[70] then
-            Executed[70] = true
-            for i = 1, 25 do buyBox(); task.wait(0.1) end
-        end
-
-        if wave >= 72 and not Executed["AM12"] then
-            Executed["AM12"] = true
-            upgradeUnit("Armored Mage (Requip)", 12)
-        end
-
-        if wave >= 73 and not Executed[73] then
-            Executed[73] = true
-            for i = 1, 25 do buyBox(); task.wait(0.1) end
-        end
-
-        if wave >= 75 and not Executed["CC11"] then
-            Executed["CC11"] = true
-            upgradeUnit("Company Captain (Hybrid)", 11)
-        end
-
-        if wave >= 76 and not Executed[76] then
-            Executed[76] = true
-            for i = 1, 25 do buyBox(); task.wait(0.1) end
-        end
-
-        if wave >= 78 and not Executed[78] then
-            Executed[78] = true
-            local monachTargets = {
-                {"Lich King (Ruler)"}, {"Koguro (Unsealed)"},
-                {"Ice Queen (Release)"}, {"Iscanur (Pride)"}
+        if wave >= 41 and not Executed[41] then
+            Executed[41] = true
+            game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("SpringEvent"):WaitForChild("ConfirmPlacement"):FireServer()
+            task.wait(1)
+            local S5 = {
+                [1] = "Purchase",
+                [2] = "SkipWaves5"
             }
-            for _, t in ipairs(monachTargets) do
-                buyMonach(); task.wait(1)
-                applyMonachToUnit(t[1], 1); task.wait(1)
-            end
+
+            game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("SpringEvent"):WaitForChild("ShopEvent"):FireServer(unpack(S5))
         end
 
-        if wave >= 79 and not Executed[79] then
-            Executed[79] = true
-            upgradeUnit("Koguro (Unsealed)", 12); task.wait(1)
-            upgradeUnit("Lich King (Ruler)", 13); task.wait(1)
-            upgradeUnit("Iscanur (Pride)", 15);   task.wait(1)
-            upgradeUnit("Ice Queen (Release)", 15); task.wait(1)
+        if wave >= 46 and not Executed[46] then
+            Executed[46] = true
+            game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("SpringEvent"):WaitForChild("ConfirmPlacement"):FireServer()
         end
 
-        if wave >= 80 and not Executed[80] then
-            Executed[80] = true
-            MonachApplied = {}
-            for i = 1, 3 do
-                buyMonach(); task.wait(0.4)
-                applyMonachToUnit("Rabbit Hero (Guts)", 1); task.wait(0.3)
-            end
+        if wave >= 51 and not Executed[51] then
+        Executed[51] = true
+        local RS = {
+            [1] = "Vote"
+        }
+
+        game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("MatchRestartSettingEvent"):FireServer(unpack(RS))
         end
-
-        if wave >= 82 and not Executed[82] then
-            Executed[82] = true
-            for i = 1, 4 do
-                buyMonach(); task.wait(0.4)
-                applyMonachToUnit("Ice Manipulator (Admiral)", 1); task.wait(0.3)
-            end
-        end
-
-        if wave >= 86 and not Executed[86] then
-            Executed[86] = true
-            for i = 1, 3 do
-                buyMonach(); task.wait(0.4)
-                applyMonachToUnit("Trash Gamer (Twin Blades)", 1); task.wait(0.3)
-            end
-        end
-
-        if wave >= 90 and not Executed[90] then
-            Executed[90] = true
-            for i = 1, 3 do
-                buyMonach(); task.wait(0.4)
-                applyMonachToUnit("Armored Mage (Requip)", 1); task.wait(0.3)
-            end
-        end
-
-        if wave >= 95 and not Executed[95] then
-            Executed[95] = true
-            for i = 1, 3 do
-                buyMonach(); task.wait(0.4)
-                applyMonachToUnit("Company Captain (Hybrid)", 1); task.wait(0.3)
-            end
-        end
-
-        if wave >= 100 and not Executed[100] then
-            Executed[100] = true
-            MonachApplied = {}
-            local monachTargets = {
-                {"Lich King (Ruler)"}, {"Koguro (Unsealed)"},
-                {"Ice Queen (Release)"}, {"Iscanur (Pride)"}
-            }
-            for _, t in ipairs(monachTargets) do
-                buyMonach(); task.wait(1)
-                applyMonachToUnit(t[1], 1); task.wait(1)
-            end
-        end
-
-        if wave >= 101 and not Executed[101] then
-            Executed[101] = true
-            MonachApplied = {}
-            local batches = {
-                {"Company Captain (Hybrid)", 3},
-                {"Armored Mage (Requip)", 3},
-                {"Trash Gamer (Twin Blades)", 3},
-                {"Ice Manipulator (Admiral)", 4},
-                {"Rabbit Hero (Guts)", 3},
-            }
-            for _, b in ipairs(batches) do
-                for i = 1, b[2] do
-                    buyMonach(); task.wait(0.4)
-                    applyMonachToUnit(b[1], 1); task.wait(0.3)
-                end
-                task.wait(1)
-            end
-        end
-
-        if wave >= 110 and not Executed["110"] then
-            Executed["110"] = true
-            upgradeUnit("Ice Queen (Release)", 15)
-        end
-
-        if wave >= 111 and not Executed[111] then
-            Executed[111] = true
-            for i = 1, 3 do
-                buyMonach(); task.wait(0.4)
-                applyMonachToUnit("Ice Queen (Release)", 1); task.wait(0.3)
-            end
-        end
-
-        if wave >= 116 and not Executed[116] then
-            Executed[116] = true
-            upgradeUnit("Koguro (Unsealed)", 12); task.wait(1)
-            upgradeUnit("Lich King (Ruler)", 13); task.wait(1)
-            upgradeUnit("Iscanur (Pride)", 15);   task.wait(1)
-            upgradeUnit("Ice Queen (Release)", 15); task.wait(1)
-        end
-
-        if wave >= 117 and not Executed[117] then
-            Executed[117] = true
-            MonachApplied = {}
-            local monachTargets = {
-                {"Lich King (Ruler)"}, {"Koguro (Unsealed)"},
-                {"Ice Queen (Release)"}, {"Iscanur (Pride)"}
-            }
-            for _, t in ipairs(monachTargets) do
-                buyMonach(); task.wait(1)
-                applyMonachToUnit(t[1], 1); task.wait(1)
-            end
-        end
-
-        if wave >= 118 and not Executed[118] then
-            Executed[118] = true
-            local uuid = findUnitUUID("Koguro (Unsealed)")
-            if uuid then
-                ReplicatedStorage.Networking.Units["Update 6.5"].Koguro_DomainEvent
-                    :FireServer("ToggleAuto", uuid)
-            end
-        end
-
-        if wave >= 125 and not Executed["BARRICADE"] then
-            Executed["BARRICADE"] = true
-            startBarricadeLoop()
-        end
-
-        if wave >= 159 and not Executed[159] then
-            Executed[159] = true
-            for _, ln in ipairs({4,5,6,7}) do buyLane(ln) end
-            task.wait(10)
-            for _, ln in ipairs({4,5,6,7}) do buyLane(ln) end
-        end
-    end
-end)
-
--- ======================
--- UNIT PLACEMENT BURST LOOP
--- ลด task.wait ระหว่าง unit จาก 2 วิ → 1.5 วิ
--- และรวม 3 Sprintwagon เป็น batch ครั้งเดียว
--- ======================
-local PLACE_DELAY = 1.5  -- ลดจาก 2 วิ
-
-task.spawn(function()
-    local units = {
-        {"Koguro (Unsealed)",        "235",       Vector3.new(6.1883745193481445,253.0923614501953,100.23284912109375),  50, 2},
-        {"Lich King (Ruler)",        "338",       Vector3.new(5.769950866699219,249.0923614501953,95.12089538574219),   51, 2},
-        {"Iscanur (Pride)",          "270",       Vector3.new(5.73417329788208,253.0923614501953,90.96935272216797),    52, 2},
-        {"Ice Queen (Release)",      "363",       Vector3.new(-21.437185287475586,252.0919647216797,101.15544891357422), 53, 2},
-        {"Company Captain (Hybrid)", "360",       Vector3.new(20.010068893432617,252.58169555664062,102.87059020996094), 54, 1},
-        {"Company Captain (Hybrid)", "360",       Vector3.new(17.010068893432617,252.58169555664062,102.87059020996094), 55, 1},
-        {"Company Captain (Hybrid)", "360",       Vector3.new(14.010068893432617,252.58169555664062,102.87059020996094), 56, 1},
-        {"Armored Mage (Requip)",    "358:Evolved",Vector3.new(20.010068893432617,252.58169555664062,91.87059020996094),  57, 1},
-        {"Armored Mage (Requip)",    "358:Evolved",Vector3.new(17.010068893432617,252.58169555664062,91.87059020996094),  58, 1},
-        {"Armored Mage (Requip)",    "358:Evolved",Vector3.new(14.010068893432617,252.58169555664062,91.87059020996094),  59, 1},
-        {"Trash Gamer (Twin Blades)","366:Evolved",Vector3.new(10.069950866699219,249.0923614501953,95.12089538574219),  60, 1},
-        {"Trash Gamer (Twin Blades)","366:Evolved",Vector3.new(10.069950866699219,249.0923614501953,97.12089538574219),  61, 1},
-        {"Trash Gamer (Twin Blades)","366:Evolved",Vector3.new(10.069950866699219,249.0923614501953,99.12089538574219),  62, 1},
-        {"Ice Manipulator (Admiral)","361:Evolved",Vector3.new(13.069950866699219,249.0923614501953,94.12089538574219),  63, 1},
-        {"Ice Manipulator (Admiral)","361:Evolved",Vector3.new(13.069950866699219,249.0923614501953,96.12089538574219),  64, 1},
-        {"Ice Manipulator (Admiral)","361:Evolved",Vector3.new(13.069950866699219,249.0923614501953,98.12089538574219),  65, 1},
-        {"Ice Manipulator (Admiral)","361:Evolved",Vector3.new(13.069950866699219,249.0923614501953,100.12089538574219), 66, 1},
-        {"Ice Queen (Release)",      "363",        Vector3.new(-21.148853302001953,252.0919647216797,97.92547607421875), 67, 2},
-        {"Ice Queen (Release)",      "363",        Vector3.new(-20.91863441467285,252.0919647216797,94.68634796142578),  68, 2},
-        -- 3 Sprintwagons รวม batch เดียว
-        {"Sprintwagon", "35", Vector3.new(4.9603,251.6905,115.8387),   69, 1},
-        {"Sprintwagon", "35", Vector3.new(2.4375,251.6905,115.3120),   70, 1},
-        {"Sprintwagon", "35", Vector3.new(-0.7760,251.5234,115.2861),  71, 1},
-    }
-
-    while true do
-        for _, u in ipairs(units) do
-            placeUnit(u[1], u[2], u[3], u[4])
-            task.wait(PLACE_DELAY)
-        end
-        task.wait(5) -- รอพักก่อนวนใหม่
     end
 end)
