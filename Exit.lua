@@ -62,13 +62,13 @@ task.spawn(function()
         local presents = player:GetAttribute("Presents26") or 0
         local lv = player:GetAttribute("Level") or 0
 
-        print("🎁 Presents26:", presents, "/", TARGET_PRESENTS)
+        print("💐 Flowers26:", Flowers26, "/", TARGET_PRESENTS)
         print("💠 level:", lv)
 
         if not Config.LockLV then
-            if presents >= TARGET_PRESENTS and not alreadyExit then
+            if Flowers26 >= TARGET_PRESENTS and not alreadyExit then
                 alreadyExit = true
-                warn("✅ Presents26 ครบ (" .. presents .. ") → ออก Lobby ใน " .. EXIT_DELAY .. " วินาที")
+                warn("✅ Flowers26 ครบ (" .. presents .. ") → ออก Lobby ใน " .. EXIT_DELAY .. " วินาที")
 
                 task.delay(EXIT_DELAY, function()
                     pcall(function()
@@ -79,7 +79,7 @@ task.spawn(function()
         elseif lv >= Config.LockLV then
             if presents >= TARGET_PRESENTS and not alreadyExit then
                 alreadyExit = true
-                warn("✅ Presents26 ครบ (" .. presents .. ") → ออก Lobby ใน " .. EXIT_DELAY .. " วินาที")
+                warn("✅ Flowers26 ครบ (" .. presents .. ") → ออก Lobby ใน " .. EXIT_DELAY .. " วินาที")
 
                 task.delay(EXIT_DELAY, function()
                     pcall(function()
@@ -93,4 +93,4 @@ task.spawn(function()
     end
 end)
 
-print("✅ Present Checker Loaded")
+print("✅ Flowers26 Checker Loaded")
