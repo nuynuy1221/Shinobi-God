@@ -553,8 +553,8 @@ local function startStoryFarm()
                 task.wait(1)
             end
 
-            if wave >= 2 and not StoryExecuted[2] then
-                StoryExecuted[2] = true
+            if wave >= 3 and not StoryExecuted[3] then
+                StoryExecuted[3] = true
                 print("📍 [Story] Wave 2 - วาง units")
                 placeUnit("Bounty Hunter", "347",
                     Vector3.new(425.01348876953125, 2.29998779296875, -359.47314453125), 2)
@@ -563,7 +563,7 @@ local function startStoryFarm()
                     Vector3.new(425.176513671875, 2.29998779296875, -357.187744140625), 2)
                 task.wait(1)
         
-                print("📍 [Story] Wave 2 - upgrade")
+                print("📍 [Story] Wave 3 - upgrade")
                 upgradeUnit("Bounty Hunter", 3)
             end
         end
