@@ -59,7 +59,7 @@ task.spawn(function()
     while true do
         task.wait(CHECK_DELAY)
 
-        local presents = player:GetAttribute("Presents26") or 0
+        local Flowers26 = player:GetAttribute("Flowers26") or 0
         local lv = player:GetAttribute("Level") or 0
 
         print("💐 Flowers26:", Flowers26, "/", TARGET_PRESENTS)
