@@ -93,6 +93,41 @@ task.spawn(function()
 		task.wait(0.1)
 	end
 
+	--=========================
+	-- 🔥 AUTO SELL WITH TRAITS
+	--=========================
+	task.wait(0.5)
+
+	local memoriaTraits = {
+		"Vigor","Range","Fortune","Strength","Marksman",
+		"Solar","Deadeye","Contagious","Jack of All","Divinity"
+	}
+
+	local unitTraits = {
+		"Vigor","Swift","Marksman","Blitz","Deadeye",
+		"Monarch","Range","Scholar","Fortune","Solar","Ethereal"
+	}
+
+	for _, trait in ipairs(memoriaTraits) do
+		SettingsEvent:FireServer("ChangeValue", {
+			["Value"] = trait,
+			["Name"] = "AutoSellMemoriasWithTraits",
+			["DeepValue"] = true
+		})
+		print("🧠 Sell Memoria Trait:", trait)
+		task.wait(0.1)
+	end
+
+	for _, trait in ipairs(unitTraits) do
+		SettingsEvent:FireServer("ChangeValue", {
+			["Value"] = trait,
+			["Name"] = "AutoSellUnitsWithTraits",
+			["DeepValue"] = true
+		})
+		print("⚔️ Sell Unit Trait:", trait)
+		task.wait(0.1)
+	end
+
 	print("✅ ตั้งค่า Auto Sell ครบแล้ว")
 
 end)
