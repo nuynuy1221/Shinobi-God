@@ -55,8 +55,8 @@ end
 
 local userLabel       = createBar("User",       0.18, Color3.fromRGB(52, 152, 219),  "🧑")
 local levelLabel      = createBar("Level",      0.36, Color3.fromRGB(46, 204, 113),  "🏆")
-local presents26Label = createBar("Presents26", 0.54, Color3.fromRGB(241, 196, 15),  "🎁")
-local icequeenLabel   = createBar("IceQueen",   0.72, Color3.fromRGB(231, 76, 60),   "👑")
+local Flowers26Label = createBar("Presents26", 0.54, Color3.fromRGB(241, 196, 15),  "🎁")
+local ShinobiGodLabel   = createBar("IceQueen",   0.72, Color3.fromRGB(231, 76, 60),   "👑")
 local memoriaLabel    = createBar("Memoria",    0.90, Color3.fromRGB(155, 89, 182),  "🃏")
 
 -- Toggle HUD (B)
@@ -84,17 +84,17 @@ local function getAttr(list)
 end
 
 local function getLevel()    return getAttr({"Level","level","PlayerLevel","currentLevel"}) end
-local function getPresents26() return getAttr({"Presents26","presents26"}) end
+local function getFlowers26() return getAttr({"Flowers26","flowers26"}) end
 local function hasMemoria()  return player:GetAttribute("WinterMemoriaVanguardPityCompleted") == true end
 
 -- =========================
--- checkIceQueen — throttled loop ทุก 3 วิ
+-- checkShinobi God — throttled loop ทุก 3 วิ
 -- เดิมอยู่ใน RenderStepped (60x/วิ!) ลด CPU มาก
 -- =========================
-local TARGET = "Ice Queen"
-local cachedHasIceQueen = false
+local TARGET = "Shinobi God"
+local cachedHasShinobiGod = false
 
-local function checkIceQueen()
+local function checkShinobiGod()
     local place = game.PlaceId
     if place == 16277809958 then
         local ok, units = pcall(function()
@@ -123,8 +123,8 @@ end
 task.spawn(function()
     while true do
         pcall(function()
-            cachedHasIceQueen = checkIceQueen()
-            player:SetAttribute("HasIceQueen", cachedHasIceQueen)
+            cachedHasShinobiGod = checkShinobiGod()
+            player:SetAttribute("HasShinobiGod", cachedHasShinobiGod)
         end)
         task.wait(3)
     end
@@ -137,8 +137,8 @@ RunService.RenderStepped:Connect(function()
     pcall(function()
         userLabel.Text        = "🤖 User : "     .. player.Name
         levelLabel.Text       = "⬆️ Level : "    .. getLevel()
-        presents26Label.Text  = "🎁 Presents : " .. getPresents26()
-        icequeenLabel.Text    = "👑 Ice Queen : " .. (cachedHasIceQueen and "✅" or "❌")
+        Flowers26Label.Text  = "💐 Flowers26 : " .. getPresents26()
+        ShinobiGodLabel.Text    = "👑 Ice Queen : " .. (cachedHasIceQueen and "✅" or "❌")
         memoriaLabel.Text     = "🃏 Memoria : "   .. (hasMemoria() and "✅" or "❌")
     end)
 end)
