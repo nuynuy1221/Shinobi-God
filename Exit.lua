@@ -12,14 +12,18 @@ end
 
 if getgenv().Config == nil then
     getgenv().Config = {
-        LockLV = nil
+        LockLV = nil,
+        FarmOnly = false,
+        FarmOnlyFlowers26 = 0
     }
 end
 
 local Config = getgenv().Config
 if type(Config) ~= "table" then
     Config = {
-        LockLV = nil
+        LockLV = nil,
+        FarmOnly = false,
+        FarmOnlyFlowers26 = 0
     }
     getgenv().Config = Config
 end
@@ -87,28 +91,22 @@ task.spawn(function()
         print("💐 Flowers26:", Flowers26, "/", TARGET_PRESENTS)
         print("💠 level:", lv)
 
-        if not Config.LockLV then
-            if Flowers26 >= TARGET_PRESENTS and not alreadyExit then
-                alreadyExit = true
-                warn("✅ Flowers26 ครบ (" .. presents .. ") → ออก Lobby ใน " .. EXIT_DELAY .. " วินาที")
+        local flowers26Done = Config.FarmOnly and Flowers26 >= Config.FarmOnlyFlowers26
+        local levelDone = Config.LockLV and lv >= Config.LockLV and lv > initialLevel
 
-                task.delay(EXIT_DELAY, function()
-                    pcall(function()
-                        TeleportEvent:FireServer("Lobby")
-                    end)
+        if (flowers26Done or levelDone) and not alreadyExit then
+            alreadyExit = true
+            local reason = flowers26Done
+                and "🌾 Flowers26 ครบ (" .. Flowers26 .. "/" .. Config.FarmOnlyFlowers26 .. ")"
+                or "🎓 Level ถึง (" .. lv .. "/" .. Config.LockLV .. ")"
+            warn(reason .. " → ออก Lobby ใน " .. EXIT_DELAY .. " วินาที")
+            task.delay(EXIT_DELAY, function()
+                pcall(function()
+                    TeleportEvent:FireServer("Lobby")
                 end)
-            end
-        elseif lv >= Config.LockLV then
-            if not alreadyExit then
-                alreadyExit = true
-                task.delay(EXIT_DELAY, function()
-                    pcall(function()
-                        TeleportEvent:FireServer("Lobby")
-                    end)
-                end)
-            end
+            end)
         else
-            print("❌ เวลยังไม่ถึง Config ฟาร์มต่อ")
+            print("⏳ ฟาร์มต่อ | Flowers26:", Flowers26, "| Level:", lv)
         end
     end
 end)
