@@ -22,7 +22,7 @@ if Config.RestartMethod == nil then
     Config.RestartMethod = true -- default = true
 end
 
-if Config.RestartMethod = true then
+if Config.RestartMethod == true then
     print("⏩ ฟาร์มแบบเร็วจี๋")
 end
 
