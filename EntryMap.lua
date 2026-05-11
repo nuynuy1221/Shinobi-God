@@ -13,7 +13,9 @@ if getgenv().Config == nil then
         BuyMemoria = false,
         LockLV = nil,
         CustomRR = false,
-        RestartMethod = true
+        RestartMethod = true,
+        FarmOnly = false,
+        FarmOnlyFlowers26 = 0
     }
 end
 
@@ -31,6 +33,12 @@ end
 -- บังคับให้เปิดได้เฉพาะ true เท่านั้น
 Config.BuyMemoria = (Config.BuyMemoria == true)
 Config.CustomRR = (Config.CustomRR == true)
+
+-- FarmOnly
+Config.FarmOnly = (Config.FarmOnly == true)
+if type(Config.FarmOnlyFlowers26) ~= "number" then
+    Config.FarmOnlyFlowers26 = 0
+end
 
 -- LockLV ต้องเป็นตัวเลขเท่านั้น
 if type(Config.LockLV) ~= "number" then
@@ -501,6 +509,21 @@ task.spawn(function()
             local Flowers26 = getFlowers26()
 
             local hasUnit = hasShinobiGod()
+
+			-- ✅ FarmOnly mode
+            if Config.FarmOnly then
+                if Flowers26 >= Config.FarmOnlyFlowers26 then
+                    print("🌾 FarmOnly: Flowers26 ครบแล้ว", Flowers26, "/", Config.FarmOnlyFlowers26, "→ หยุดฟาร์ม")
+                    DelayCheck = 600
+                    task.wait(60)
+                    GoSpring()
+                else
+                    print("🌾 FarmOnly: ฟาร์ม Spring | Flowers26:", Flowers26, "/", Config.FarmOnlyFlowers26)
+                    task.wait(60)
+                    GoSpring()
+                end
+                return
+            end
 
             print(
                 "🧠 Decision | Level:", level,
