@@ -99,10 +99,8 @@ task.spawn(function()
                 end)
             end
         elseif lv >= Config.LockLV then
-            if Flowers26 >= TARGET_PRESENTS and not alreadyExit then
+            if not alreadyExit then
                 alreadyExit = true
-                warn("✅ Flowers26 ครบ (" .. presents .. ") → ออก Lobby ใน " .. EXIT_DELAY .. " วินาที")
-
                 task.delay(EXIT_DELAY, function()
                     pcall(function()
                         TeleportEvent:FireServer("Lobby")
