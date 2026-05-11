@@ -653,6 +653,14 @@ task.spawn(function()
             if inGame then
                 warn("🔄 Wave 0 → รีรอบเกม รีเซ็ตทุกอย่าง")
                 Executed = {}
+                local SETUP = {
+                    [1] = {
+                        [1] = "Setup"
+                    }
+                }
+
+                game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("SpringEvent"):WaitForChild("SetLoadout"):FireServer(unpack(SETUP))
+
                 local Skip = {
                     [1] = "Skip"
                 }
@@ -669,6 +677,25 @@ task.spawn(function()
         -- WAVE 1
         if wave >= 1 and not Executed[1] then
             Executed[1] = true
+            game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("SpringEvent"):WaitForChild("ConfirmPlacement"):FireServer()
+            task.wait(0.1)
+            local SKIP5 = {
+                [1] = "Purchase",
+                [2] = "SkipWaves5"
+            }
+
+            game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("SpringEvent"):WaitForChild("ShopEvent"):FireServer(unpack(SKIP5))
+            task.wait(0.1)
+            game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("SpringEvent"):WaitForChild("ConfirmPlacement"):FireServer()
+            task.wait(0.1)
+            local SKIP5 = {
+                [1] = "Purchase",
+                [2] = "SkipWaves5"
+            }
+
+            game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("SpringEvent"):WaitForChild("ShopEvent"):FireServer(unpack(SKIP5))
+            task.wait(0.1)
+
             local Vote = {
                 [1] = "Vote"
             }
