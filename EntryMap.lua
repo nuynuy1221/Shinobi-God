@@ -164,6 +164,26 @@ local function hasShinobiGod()
     return false
 end
 
+-- =========================
+-- เช็ค Dream Conqueror Memoria
+-- =========================
+local function hasMemoria()
+    local windows = playerGui:FindFirstChild("Windows")
+    if not windows then
+        warn("[hasMemoria] Windows ยังไม่โหลด → ถือว่ายังไม่ได้")
+        return false
+    end
+
+    local ok, result = pcall(function()
+        return windows.Titles.Holder.List.Main["Dream Conqueror"].Equip:FindFirstChild("Locked")
+    end)
+
+    if not ok then
+        return true
+    end
+
+    return result == nil
+end
 
 -- =========================
 -- Summon Event
@@ -557,17 +577,39 @@ task.spawn(function()
                         GoSpring()
                     end
                 else
-                    if Flowers26 >= 1500 and Flowers26 < 7500 then
-                        summonEvent:FireServer(unpack(summonArgs))
-                        task.wait(0.1)
-                    elseif Flowers26 >= 7500 then
-                        summonEvent:FireServer(unpack(summonArgs50))
-                        task.wait(0.1)
-                        clickCenterScreenSafe()
+                    -- ได้ unit แล้ว แต่เลเวลยังไม่ถึง LockLV
+                    local memoria = hasMemoria()
+                    if memoria then
+                        -- ได้ทั้ง unit และ Memoria แล้ว → ฟาร์ม Story
+                        print("📈 ได้ unit + Memoria แล้ว แต่เลเวล", level, "ยังไม่ถึง", Config.LockLV, "→ ฟาร์ม Story")
+                        local Add = {
+                            [1] = "AddMatch",
+                            [2] = {
+                                ["Difficulty"] = "Normal",
+                                ["Act"] = "Act1",
+                                ["StageType"] = "Story",
+                                ["Stage"] = "Stage1",
+                                ["FriendsOnly"] = false
+                            }
+                        }
+                        game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("LobbyEvent"):FireServer(unpack(Add))
+                        task.wait(2)
+                        local ST = {[1] = "StartMatch"}
+                        game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("LobbyEvent"):FireServer(unpack(ST))
                     else
-                        print("📈 เวลไม่ถึง ล็อคไว้ ต้องไปฟาร์ม")
-                        task.wait(60)
-                        GoSpring()
+                        -- ยังไม่ได้ Memoria → summon ต่อ
+                        if Flowers26 >= 1500 and Flowers26 < 7500 then
+                            summonEvent:FireServer(unpack(summonArgs))
+                            task.wait(0.1)
+                        elseif Flowers26 >= 7500 then
+                            summonEvent:FireServer(unpack(summonArgs50))
+                            task.wait(0.1)
+                            clickCenterScreenSafe()
+                        else
+                            print("📈 ยังไม่ได้ Memoria ไปฟาร์ม Spring")
+                            task.wait(60)
+                            GoSpring()
+                        end
                     end
                 end
             else
