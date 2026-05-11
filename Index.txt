@@ -9,7 +9,9 @@ BuyItem.lua
 UnitInventory.lua
 Sell.lua
 EntryMap.lua
+EntryMap2.lua
 Farm.lua
+Farm2.lua
 SkipAndRetry.lua
 Exit.lua
 AntiAFK.lua
