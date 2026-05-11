@@ -42,7 +42,7 @@ if Config.RestartMethod == nil then
 end
 
 -- ต้องเป็น true เท่านั้นถึงรัน
-if Config.RestartMethod = true then
+if Config.RestartMethod == true then
     print("⏩ เข้าฟาร์มแบบ Restart")
 end
 
