@@ -41,7 +41,7 @@ if Config.RestartMethod == nil then
     Config.RestartMethod = true
 end
 
-if Config.RestartMethod = false then
+if Config.RestartMethod == false then
     print("💯 เข้าฟาร์มปกติ")
 end
 
