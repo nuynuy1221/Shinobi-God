@@ -503,6 +503,26 @@ task.spawn(function()
                 print("⏭️ ข้าม Enemy Milestone เพราะปิด CustomRR")
             end
 
+			if level < 31 then
+				local Add = {
+    				[1] = "AddMatch",
+    				[2] = {
+        				["Difficulty"] = "Normal",
+        				["Act"] = "Act1",
+        				["StageType"] = "Story",
+        				["Stage"] = "Stage1",
+        				["FriendsOnly"] = false
+    				}
+				}
+				game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("LobbyEvent"):FireServer(unpack(Add))
+				task.wait(2)
+				local ST = {
+    				[1] = "StartMatch"
+				}
+				game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("LobbyEvent"):FireServer(unpack(ST))
+				return
+			end
+
             -- ❌ ไม่เข้า Story แล้ว ไม่สน Level
             -- ทำแต่ Winter เท่านั้น
 
