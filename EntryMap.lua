@@ -153,7 +153,7 @@ local function hasShinobiGod()
                 local holder = uuid:FindFirstChild("Container")
                     and uuid.Container:FindFirstChild("Holder")
 
-                if holder and holder:FindFirstChild("Shinobi God") then
+                if holder and holder:FindFirstChild("Shinobi God (Infinite Dreams)") then
                     print("✅ FOUND Shinobi God")
                     return true
                 end
