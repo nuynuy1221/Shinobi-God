@@ -68,7 +68,8 @@ task.spawn(function()
         "SorryForAutoSell",
         "Shinobi",
         "HeIsComing",
-        "TooMuchPain"
+        "TooMuchPain",
+        "OopsiePoopsie2"
     }
 
     print("เริ่มรีดีมโค้ด...")
