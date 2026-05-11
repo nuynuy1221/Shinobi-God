@@ -490,6 +490,93 @@ local function stopCustomFarm()
 end
 
 -- ======================
+-- STORY FARM
+-- ======================
+local StoryRunning = false
+local StoryThread  = nil
+
+local function startStoryFarm()
+    if StoryRunning then return end
+    StoryRunning = true
+    print("📖 เริ่มโหมด Story Farm")
+
+    local TeleportEvent = Networking:WaitForChild("TeleportEvent")
+
+    StoryThread = task.spawn(function()
+        local StoryExecuted = {}
+        local startTime = tick()
+
+        while StoryRunning do
+            task.wait(0.5)
+
+            if not isStoryLevel() then
+                print("🛑 ออกจาก Story → หยุด Story Farm")
+                StoryRunning = false
+                break
+            end
+
+            -- ✅ เช็ค Attribute Level ถึง 11 → กลับ Lobby
+            local level = player:GetAttribute("Level")
+            if level and level >= 11 then
+                warn("🎓 Level ถึง " .. level .. " → กลับ Lobby")
+                pcall(function() TeleportEvent:FireServer("Lobby") end)
+                StoryRunning = false
+                break
+            end
+
+            local wave = getWave()
+            if not wave then continue end
+
+            -- ============ วางตรงนี้เลย ============
+            -- ตัวอย่าง: ปรับ positions / unit ตามที่ต้องการ
+
+            -- RESET (WAVE 0)
+            if wave == 0 then
+                if inGame then
+                    warn("🔄 Wave 0 → รีรอบเกม รีเซ็ตทุกอย่าง")
+                    StoryExecuted = {}
+                    local Skip = {
+                         [1] = "Skip"
+                     }
+
+                     game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("SkipWaveEvent"):FireServer(unpack(Skip))
+                 end
+             end
+
+            if wave >= 1 and not StoryExecuted[1] then
+                StoryExecuted[1] = true
+                inGame = true
+                print("📍 [Story] Wave 1 - วาง units")
+                placeUnit("Bounty Hunter", "347",
+                    Vector3.new(431.1807556152344, 3.338402032852173, -358.1429138183594), 2)
+                task.wait(1)
+            end
+
+            if wave >= 3 and not StoryExecuted[3] then
+                StoryExecuted[3] = true
+                print("📍 [Story] Wave 3 - วาง units")
+                placeUnit("Bounty Hunter", "347",
+                    Vector3.new(425.01348876953125, 2.29998779296875, -359.47314453125), 2)
+                task.wait(1)
+                placeUnit("Bounty Hunter", "347",
+                    Vector3.new(425.176513671875, 2.29998779296875, -357.187744140625), 2)
+                task.wait(1)
+        
+                print("📍 [Story] Wave 3 - upgrade")
+                upgradeUnit("Bounty Hunter", 3)
+            end
+        end
+    end)
+end
+
+local function stopStoryFarm()
+    if not StoryRunning then return end
+    StoryRunning = false
+    StoryThread = nil
+    print("🛑 หยุด Story Farm")
+end
+
+-- ======================
 -- MODIFIER helper (ลด code ซ้ำ)
 -- ======================
 local ModifierEvent = Networking:WaitForChild("WinterZombies"):WaitForChild("ModifierMachineEvent")
@@ -524,6 +611,16 @@ task.spawn(function()
             continue
         else
             stopCustomFarm()
+        end
+
+        if isStoryLevel() then
+            if not StoryRunning then
+                startStoryFarm()
+            end
+            task.wait(1)
+            continue
+        else
+            stopStoryFarm()
         end
 
         -- RESET (WAVE 0)
