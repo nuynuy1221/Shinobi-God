@@ -91,7 +91,9 @@ task.spawn(function()
         print("💐 Flowers26:", Flowers26, "/", TARGET_PRESENTS)
         print("💠 level:", lv)
 
-        local flowers26Done = Config.FarmOnly and Flowers26 >= Config.FarmOnlyFlowers26
+        local flowers26Done = Config.FarmOnly
+            and Flowers26 >= Config.FarmOnlyFlowers26
+            or (not Config.FarmOnly and Flowers26 >= TARGET_PRESENTS)
         local levelDone = Config.LockLV and lv >= Config.LockLV and lv > initialLevel
 
         if (flowers26Done or levelDone) and not alreadyExit then
