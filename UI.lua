@@ -366,7 +366,19 @@ local function getAttr(list)
 end
 local function getLevel()     return getAttr({"Level","level","PlayerLevel","currentLevel"}) end
 local function getFlowers26() return getAttr({"Flowers26","flowers26"}) end
-local function hasMemoria()   return player:GetAttribute("Spring26MemoriaVanguardPityCompleted") == true end
+local function hasMemoria()
+    local pg = player:FindFirstChild("PlayerGui")
+    if not pg then return false end
+    local windows = pg:FindFirstChild("Windows")
+    if not windows then return false end
+
+    local ok, result = pcall(function()
+        return windows.Titles.Holder.List.Main["Dream Conqueror"].Equip:FindFirstChild("Locked")
+    end)
+
+    if not ok then return true end
+    return result == nil
+end
 
 local TARGET = "Shinobi God"
 
