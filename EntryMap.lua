@@ -570,6 +570,21 @@ task.spawn(function()
             -- ❌ ไม่เข้า Story แล้ว ไม่สน Level
             -- ทำแต่ Winter เท่านั้น
 
+            -- ✅ ถ้าเลเวล ≥ 11 ต้องสุ่มให้หมดก่อนทำอะไร
+            if level >= 11 and Flowers26 >= 1500 then
+                if Flowers26 < 7500 then
+                    print("🎲 เลเวล ≥ 11 สุ่มให้หมดก่อน | Flowers26:", Flowers26)
+                    summonEvent:FireServer(unpack(summonArgs))
+                    task.wait(0.1)
+                else
+                    print("🎲 เลเวล ≥ 11 สุ่ม 50 | Flowers26:", Flowers26)
+                    summonEvent:FireServer(unpack(summonArgs50))
+                    task.wait(0.1)
+                    clickCenterScreenSafe()
+                end
+                return
+            end
+
             if hasUnit then
                 if not Config.LockLV then
                     if Flowers26 >= 1500 and Flowers26 < 7500 then
