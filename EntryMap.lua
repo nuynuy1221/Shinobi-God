@@ -512,18 +512,38 @@ task.spawn(function()
 
 			-- ✅ FarmOnly mode
             if Config.FarmOnly then
-                if Flowers26 >= Config.FarmOnlyFlowers26 then
-                    print("🌾 FarmOnly: Flowers26 ครบแล้ว", Flowers26, "/", Config.FarmOnlyFlowers26, "→ หยุดฟาร์ม")
-                    DelayCheck = 600
-                    task.wait(60)
-                    GoSpring()
-                else
-                    print("🌾 FarmOnly: ฟาร์ม Spring | Flowers26:", Flowers26, "/", Config.FarmOnlyFlowers26)
-                    task.wait(60)
-                    GoSpring()
-                end
-                return
-            end
+    			-- ✅ เช็คเลเวลก่อนเสมอ ถ้ายังไม่ถึง 11 ให้ฟาร์ม Story ก่อน
+    			if level < 11 then
+        			print("🌾 FarmOnly: เลเวลยังไม่ถึง 11 → ฟาร์ม Story ก่อน")
+        			local Add = {
+            			[1] = "AddMatch",
+            			[2] = {
+                			["Difficulty"] = "Normal",
+                			["Act"] = "Act1",
+                			["StageType"] = "Story",
+                			["Stage"] = "Stage1",
+                			["FriendsOnly"] = false
+            			}
+        			}
+        			game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("LobbyEvent"):FireServer(unpack(Add))
+        			task.wait(2)
+        			local ST = {[1] = "StartMatch"}
+        			game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("LobbyEvent"):FireServer(unpack(ST))
+        			return
+    			end
+
+    			if Flowers26 >= Config.FarmOnlyFlowers26 then
+        			print("🌾 FarmOnly: Flowers26 ครบแล้ว", Flowers26, "/", Config.FarmOnlyFlowers26, "→ หยุดฟาร์ม")
+        			DelayCheck = 600
+        			task.wait(60)
+        			GoSpring()
+    			else
+        			print("🌾 FarmOnly: ฟาร์ม Spring | Flowers26:", Flowers26, "/", Config.FarmOnlyFlowers26)
+        			task.wait(60)
+        			GoSpring()
+    			end
+    			return
+			end
 
             print(
                 "🧠 Decision | Level:", level,
