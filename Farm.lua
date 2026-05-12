@@ -666,15 +666,22 @@ task.spawn(function()
                     }
                     game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("SpringEvent"):WaitForChild("SetLoadout"):FireServer(unpack(SETUP))
                     task.wait(0.1)
-                    local btn = player.PlayerGui.Guides.List.StageInfo.Buttons.SpringEvent.Button
-                    btn.Selectable = true
-                    GuiService.SelectedCoreObject = btn
-                    task.wait(0.05)
-                    VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Return, false, game)
-                    task.wait(0.03)
-                    VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Return, false, game)
-                    task.wait(0.05)
-                    GuiService.SelectedCoreObject = nil
+                    local btnOk, btn = pcall(function()
+                        return player.PlayerGui.Guides.List.StageInfo.Buttons.SpringEvent.Button
+                    end)
+                    if btnOk and btn and btn:IsA("GuiButton") then
+                        btn.Selectable = true
+                        GuiService.SelectedCoreObject = btn
+                        task.wait(0.05)
+                        VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Return, false, game)
+                        task.wait(0.03)
+                        VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Return, false, game)
+                        task.wait(0.05)
+                        GuiService.SelectedCoreObject = nil
+                        print("✅ กดปุ่ม SpringEvent สำเร็จ")
+                    else
+                        warn("❌ หาปุ่ม SpringEvent ไม่เจอ path:", tostring(btn))
+                    end
                 else
                     -- ✅ Normal reset
                     local SETUP = {
