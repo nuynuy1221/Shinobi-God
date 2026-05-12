@@ -523,6 +523,8 @@ local function startStoryFarm()
     print("📖 เริ่มโหมด Story Farm")
 
     local TeleportEvent = Networking:WaitForChild("TeleportEvent")
+    local initialStoryLevel = player:GetAttribute("Level") or 0
+    print("📊 เลเวลตอนเริ่ม Story:", initialStoryLevel)
 
     StoryThread = task.spawn(function()
         local StoryExecuted = {}
@@ -537,13 +539,26 @@ local function startStoryFarm()
                 break
             end
 
-            -- ✅ เช็ค Attribute Level ถึง 11 → กลับ Lobby
-            local level = player:GetAttribute("Level")
-            if level and level >= 11 then
-                warn("🎓 Level ถึง " .. level .. " → กลับ Lobby")
-                pcall(function() TeleportEvent:FireServer("Lobby") end)
-                StoryRunning = false
-                break
+            -- ✅ เช็ค Level
+            local level = player:GetAttribute("Level") or 0
+            local lockLV = type(getgenv().Config) == "table" and getgenv().Config.LockLV or nil
+
+            if initialStoryLevel < 11 then
+                -- เริ่มต้นต่ำกว่า 11 → ฟาร์มถึง 11 ก่อน ไม่สน LockLV
+                if level >= 11 then
+                    warn("🎓 Level ถึง 11 (จากที่เริ่มต่ำกว่า) → กลับ Lobby")
+                    pcall(function() TeleportEvent:FireServer("Lobby") end)
+                    StoryRunning = false
+                    break
+                end
+            else
+                -- เริ่มต้น ≥ 11 → ฟาร์มตาม LockLV
+                if lockLV and level >= lockLV then
+                    warn("🎓 Level ถึง " .. level .. "/" .. lockLV .. " → กลับ Lobby")
+                    pcall(function() TeleportEvent:FireServer("Lobby") end)
+                    StoryRunning = false
+                    break
+                end
             end
 
             local wave = getWave()
