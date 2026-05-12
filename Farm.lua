@@ -648,23 +648,50 @@ task.spawn(function()
         local isHighXP = springXP and springXP >= 120
 
         -- RESET (WAVE 0)
+        -- RESET (WAVE 0)
         if wave == 0 then
             if inGame then
                 warn("🔄 Wave 0 → รีรอบเกม รีเซ็ตทุกอย่าง")
                 Executed = {}
-                local SETUP = {
-                    [1] = {
-                        [1] = "Treasury",
-                        [2] = "Treasury",
-                        [3] = "MakeItRain",
-                        [4] = "Setup"
+
+                if isHighXP then
+                    -- 🔥 High XP reset
+                    local SETUP = {
+                        [1] = {
+                            [1] = "Treasury",
+                            [2] = "Treasury",
+                            [3] = "MakeItRain",
+                            [4] = "Setup"
+                        }
                     }
-                }
-                game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("SpringEvent"):WaitForChild("SetLoadout"):FireServer(unpack(SETUP))
-                local Skip = {
-                    [1] = "Skip"
-                }
-                game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("SkipWaveEvent"):FireServer(unpack(Skip))
+                    game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("SpringEvent"):WaitForChild("SetLoadout"):FireServer(unpack(SETUP))
+                    task.wait(0.1)
+                    local btn = player.PlayerGui.Guides.List.StageInfo.Buttons.SpringEvent.Button
+                    btn.Selectable = true
+                    GuiService.SelectedCoreObject = btn
+                    task.wait(0.05)
+                    VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Return, false, game)
+                    task.wait(0.03)
+                    VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Return, false, game)
+                    task.wait(0.05)
+                    GuiService.SelectedCoreObject = nil
+                else
+                    -- ✅ Normal reset
+                    local SETUP = {
+                        [1] = {
+                            [1] = "Treasury",
+                            [2] = "Treasury",
+                            [3] = "MakeItRain",
+                            [4] = "Setup"
+                        }
+                    }
+                    game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("SpringEvent"):WaitForChild("SetLoadout"):FireServer(unpack(SETUP))
+                    local Skip = {
+                        [1] = "Skip"
+                    }
+                    game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("SkipWaveEvent"):FireServer(unpack(Skip))
+                end
+                task.wait(1)
             end
         end
 
