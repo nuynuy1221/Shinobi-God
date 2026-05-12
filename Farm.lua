@@ -137,6 +137,12 @@ local function getSpringXP()
         return player.PlayerGui.SpringEventMenu.Frame.Holder.Content.Column.Header.RightGroup.XpProgressBar.BarTrack.XpText.Text
     end)
     if not ok or not text then return nil end
+
+    -- กรณี Max level → ถือว่า XP เยอะมาก
+    if text:find("Max") then
+        return math.huge
+    end
+
     -- รูปแบบ "18 / 30 XP" → ดึงแค่เลขหน้า
     return tonumber(text:match("^%s*(%d+)"))
 end
@@ -638,15 +644,8 @@ task.spawn(function()
             stopStoryFarm()
         end
 
-        local xp = getSpringXP()
-        if xp and xp >= 3000 then
-            warn("⭐ XP ถึง " .. xp .. " → กลับ Lobby")
-            pcall(function()
-                Networking:WaitForChild("TeleportEvent"):FireServer("Lobby")
-            end)
-            task.wait(5)
-            continue
-        end
+        local springXP = getSpringXP()
+        local isHighXP = springXP and springXP >= 120
 
         -- RESET (WAVE 0)
         if wave == 0 then
@@ -655,16 +654,16 @@ task.spawn(function()
                 Executed = {}
                 local SETUP = {
                     [1] = {
-                        [1] = "Setup"
+                        [1] = "Treasury",
+                        [2] = "Treasury",
+                        [3] = "MakeItRain",
+                        [4] = "Setup"
                     }
                 }
-
                 game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("SpringEvent"):WaitForChild("SetLoadout"):FireServer(unpack(SETUP))
-
                 local Skip = {
                     [1] = "Skip"
                 }
-
                 game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("SkipWaveEvent"):FireServer(unpack(Skip))
             end
         end
@@ -677,14 +676,120 @@ task.spawn(function()
         -- WAVE 1
         if wave >= 1 and not Executed[1] then
             Executed[1] = true
+
+            if isHighXP then
+                local Wall1 = {
+                    [1] = 2,
+                    [2] = 2
+                }
+
+                game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("SpringEvent"):WaitForChild("PlaceWall"):FireServer(unpack(Wall1))
+                task.wait(0.1)
+                local Wall2 = {
+                    [1] = 2,
+                    [2] = 4
+                }
+
+                game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("SpringEvent"):WaitForChild("PlaceWall"):FireServer(unpack(Wall2))
+                task.wait(0.1)
+                game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("SpringEvent"):WaitForChild("ConfirmPlacement"):FireServer()
+                task.wait(0.1)
+                placeUnit("Fruit Eater (He Wins)", "404:Evolved", Vector3.new(-204.2382049560547, 289.6169128417969, -301.34637451171875), 1, 1)
+                task.wait(1)
+                placeUnit("Fruit Eater (He Wins)", "404:Evolved", Vector3.new(-204.1265411376953, 289.5259704589844, -299.5531311035156), 2, 1)
+                task.wait(1)
+                placeUnit("Fruit Eater (He Wins)", "404:Evolved", Vector3.new(-204.0931854248047, 289.5259704589844, -297.6793212890625), 3, 1)
+                task.wait(1)
+                placeUnit("Devoted Demon (Obsessed)", "402:Evolved", Vector3.new(-204.2854766845703, 289.5259704589844, -295.78143310546875), 4, 2)
+                task.wait(1)
+                placeUnit("Devoted Demon (Obsessed)", "402:Evolved", Vector3.new(-204.577880859375, 289.5259704589844, -294.0124206542969), 5, 2)
+                task.wait(1)
+                placeUnit("Devoted Demon (Obsessed)", "402:Evolved", Vector3.new(-204.78810119628906, 289.5259704589844, -292.11968994140625), 6, 2)
+                task.wait(1)
+                placeUnit("Strongest Shinobi (Martial)", "407:Evolved", Vector3.new(-202.91871643066406, 289.5259704589844, -292.1649169921875), 7, 3)
+                task.wait(1)
+                placeUnit("Strongest Shinobi (Martial)", "407:Evolved", Vector3.new(-202.727294921875, 289.5259704589844, -293.8977966308594), 8, 3)
+                task.wait(1)
+                placeUnit("Strongest Shinobi (Martial)", "407:Evolved", Vector3.new(-202.50717163085938, 289.5259704589844, -295.7221984863281), 9, 3)
+                task.wait(1)
+                placeUnit("Toad Shinobi (Ribbit)", "411:Evolved", Vector3.new(-206.2301025390625, 289.5259704589844, -293.45269775390625), 10, 3)
+                task.wait(1)
+                placeUnit("Toad Shinobi (Ribbit)", "411:Evolved", Vector3.new(-205.88568115234375, 289.5259704589844, -290.7380065917969), 11, 3)
+                task.wait(1)
+                placeUnit("Toad Shinobi (Ribbit)", "411:Evolved", Vector3.new(-204.2577667236328, 289.5259704589844, -290.0289611816406), 12, 3)
+                task.wait(1)
+            else
+                -- ✅ SpringXP < 120 → ฟาร์มแบบเดิม
+                game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("SpringEvent"):WaitForChild("ConfirmPlacement"):FireServer()
+                task.wait(0.1)
+                local SKIP5 = {
+                    [1] = "Purchase",
+                    [2] = "SkipWaves5"
+                }
+                game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("SpringEvent"):WaitForChild("ShopEvent"):FireServer(unpack(SKIP5))
+                task.wait(0.1)
+                game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("SpringEvent"):WaitForChild("ConfirmPlacement"):FireServer()
+                task.wait(0.1)
+                local SKIP5 = {
+                    [1] = "Purchase",
+                    [2] = "SkipWaves5"
+                }
+                game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("SpringEvent"):WaitForChild("ShopEvent"):FireServer(unpack(SKIP5))
+                task.wait(0.1)
+                local Vote = {
+                    [1] = "Vote"
+                }
+                game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("MatchRestartSettingEvent"):FireServer(unpack(Vote))
+                game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("SpringEvent"):WaitForChild("ClaimAllSpringEventLevels"):FireServer()
+            end
+        end
+
+        -- WAVE 5
+        if wave >= 5 and not Executed[5] then
+            Executed[5] = true
+            task.wait(15)
+            local SKIP5 = {
+                [1] = "Purchase",
+                [2] = "SkipWaves5"
+            }
+            game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("SpringEvent"):WaitForChild("ShopEvent"):FireServer(unpack(SKIP5))
+        end
+
+        -- WAVE 10
+        if wave >= 10 and not Executed[10] then
+            Executed[10] = true
+            local Wall3 = {
+                [1] = 3,
+                [2] = 1
+            }
+
+            game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("SpringEvent"):WaitForChild("PlaceWall"):FireServer(unpack(Wall3))
+            task.wait(0.1)
+            local Wall4 = {
+                [1] = 4,
+                [2] = 6
+            }
+
+            game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("SpringEvent"):WaitForChild("PlaceWall"):FireServer(unpack(Wall4))
+            task.wait(0.1)
             game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("SpringEvent"):WaitForChild("ConfirmPlacement"):FireServer()
             task.wait(0.1)
             local SKIP5 = {
                 [1] = "Purchase",
                 [2] = "SkipWaves5"
             }
-
             game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("SpringEvent"):WaitForChild("ShopEvent"):FireServer(unpack(SKIP5))
+        end
+
+        -- WAVE 15
+        if wave >= 15 and not Executed[15] then
+            Executed[15] = true
+            local Wall5 = {
+                [1] = 4,
+                [2] = 4
+            }
+
+            game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("SpringEvent"):WaitForChild("PlaceWall"):FireServer(unpack(Wall5))
             task.wait(0.1)
             game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("SpringEvent"):WaitForChild("ConfirmPlacement"):FireServer()
             task.wait(0.1)
@@ -692,16 +797,20 @@ task.spawn(function()
                 [1] = "Purchase",
                 [2] = "SkipWaves5"
             }
-
             game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("SpringEvent"):WaitForChild("ShopEvent"):FireServer(unpack(SKIP5))
-            task.wait(0.1)
+        end
 
+        -- WAVE 20
+        if wave >= 20 and not Executed[20] then
+            Executed[20] = true
+            task.wait(0.1)
+            game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("SpringEvent"):WaitForChild("ConfirmPlacement"):FireServer()
+            task.wait(0.2)
             local Vote = {
                 [1] = "Vote"
             }
-
             game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("MatchRestartSettingEvent"):FireServer(unpack(Vote))
-
+            task.wait(0.2)
             game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("SpringEvent"):WaitForChild("ClaimAllSpringEventLevels"):FireServer()
         end
     end
