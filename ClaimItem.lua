@@ -66,9 +66,6 @@ task.spawn(function()
         "BumBum",
         "Spring26",
         "SorryForAutoSell",
-        "Shinobi",
-        "HeIsComing",
-        "TooMuchPain",
         "OopsiePoopsie2"
     }
 
