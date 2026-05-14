@@ -668,10 +668,11 @@ task.spawn(function()
                 warn("🔄 Wave 0 → รีรอบเกม รีเซ็ตทุกอย่าง")
                 Executed = {}
 
-                local Vote = {
-                    [1] = "Vote"
-                }
-                game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("MatchRestartSettingEvent"):FireServer(unpack(Vote))
+                local Skip = {
+                    [1] = "Skip"
+                    }
+
+                game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("SkipWaveEvent"):FireServer(unpack(Skip))
 
                 if isHighXP then
                     -- 🔥 High XP reset
