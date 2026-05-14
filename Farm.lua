@@ -660,7 +660,7 @@ task.spawn(function()
         end
 
         local springXP = getSpringXP()
-        local isHighXP = springXP and springXP >= 120
+        local isHighXP = springXP and springXP >= 210
 
         -- RESET (WAVE 0)
         -- RESET (WAVE 0)
@@ -688,14 +688,15 @@ task.spawn(function()
                     VirtualInputManager:SendKeyEvent(false,Enum.KeyCode.Return,false,game)
                     wait(0.1)
                     GuiService.SelectedCoreObject = nil
+                    local Skip = {
+                        [1] = "Skip"
+                    }
+                    game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("SkipWaveEvent"):FireServer(unpack(Skip))
                 else
                     -- ✅ Normal reset
                     local SETUP = {
                         [1] = {
-                            [1] = "Treasury",
-                            [2] = "Treasury",
-                            [3] = "MakeItRain",
-                            [4] = "Setup"
+                            [1] = "Setup",
                         }
                     }
                     game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("SpringEvent"):WaitForChild("SetLoadout"):FireServer(unpack(SETUP))
@@ -767,7 +768,7 @@ task.spawn(function()
                 placeUnit("Toad Shinobi (Ribbit)", "411:Evolved", Vector3.new(-204.2577667236328, 289.5259704589844, -290.0289611816406), 12, 3)
                 task.wait(1)
             else
-                -- ✅ SpringXP < 120 → ฟาร์มแบบเดิม
+                -- ✅ SpringXP < 210 → ฟาร์มแบบเดิม
                 game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("SpringEvent"):WaitForChild("ConfirmPlacement"):FireServer()
                 task.wait(0.1)
                 local SKIP5 = {
