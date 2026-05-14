@@ -663,11 +663,15 @@ task.spawn(function()
         local isHighXP = springXP and springXP >= 210
 
         -- RESET (WAVE 0)
-        -- RESET (WAVE 0)
         if wave == 0 then
             if inGame then
                 warn("🔄 Wave 0 → รีรอบเกม รีเซ็ตทุกอย่าง")
                 Executed = {}
+
+                local Vote = {
+                    [1] = "Vote"
+                }
+                game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("MatchRestartSettingEvent"):FireServer(unpack(Vote))
 
                 if isHighXP then
                     -- 🔥 High XP reset
