@@ -670,7 +670,7 @@ task.spawn(function()
 
                 local Skip = {
                     [1] = "Skip"
-                    }
+                }
 
                 game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("SkipWaveEvent"):FireServer(unpack(Skip))
 
