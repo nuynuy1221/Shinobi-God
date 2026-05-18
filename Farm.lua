@@ -801,7 +801,7 @@ task.spawn(function()
         -- WAVE 5
         if wave >= 5 and not Executed[5] then
             Executed[5] = true
-            task.wait(20)
+            task.wait(25)
             local SKIP5 = {
                 [1] = "Purchase",
                 [2] = "SkipWaves5"
