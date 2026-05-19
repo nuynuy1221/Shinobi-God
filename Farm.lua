@@ -798,10 +798,9 @@ task.spawn(function()
             end
         end
 
-        -- WAVE 5
-        if wave >= 5 and not Executed[5] then
-            Executed[5] = true
-            task.wait(30)
+        -- WAVE 6
+        if wave >= 6 and not Executed[6] then
+            Executed[6] = true
             game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("SpringEvent"):WaitForChild("ConfirmPlacement"):FireServer()
             task.wait(0.1)
             local SKIP5 = {
