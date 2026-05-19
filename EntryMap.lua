@@ -67,9 +67,8 @@ local playerGui = player:WaitForChild("PlayerGui", 10)
 -- ฟังก์ชันดึงเลเวลจาก Attribute (เสถียรกว่า GUI)
 -- =========================
 local function getLevel()
-    -- ชื่อ Attribute ที่น่าจะเป็น (เรียงจากน่าจะเจอมากที่สุด)
     local possibleLevelNames = {
-        "Level",          -- ชื่อมาตรฐานที่สุด
+        "Level",
         "PlayerLevel",
         "level",
         "playerLevel",
@@ -81,27 +80,26 @@ local function getLevel()
         if value ~= nil then
             local num = tonumber(value)
             if num then
-                print("พบ Level จาก Attribute:", name, "=", num)  -- debug ว่าชื่อจริงคืออะไร
+                print("พบ Level จาก Attribute:", name, "=", num)
                 return num
             end
         end
     end
     
-    -- ถ้าไม่เจอเลย ให้ fallback ไปเช็ค GUI เดิม (หรือ return 0)
     warn("ไม่พบ Attribute Level — fallback ไปเช็ค GUI")
     local success, levelLabel = pcall(function()
         return playerGui:WaitForChild("HUD", 5)
                      :WaitForChild("Main", 5)
-                     :WaitForChild("Level", 5)  -- หรือปรับ path ตามจริง
+                     :WaitForChild("Level", 5)
     end)
     
     if success and levelLabel and levelLabel:IsA("TextLabel") then
         local text = levelLabel.Text or ""
-        local num = text:match("%d+")  -- ดึงตัวเลขแรก
+        local num = text:match("%d+")
         return tonumber(num) or 0
     end
     
-    return 0  -- ถ้าไม่เจอทั้งคู่
+    return 0
 end
 
 -- =========================
@@ -119,7 +117,7 @@ local function GoSpring()
 end
 
 -- =========================
--- เช็ค Flowers26 (ทำให้ง่ายขึ้น)
+-- เช็ค Flowers26
 -- =========================
 local function getFlowers26()
     local value = player:GetAttribute("Flowers26")
@@ -196,8 +194,6 @@ end
 -- =========================
 -- Summon Event
 -- =========================
-
--- Summon ตัวละคร
 local summonEvent = rep:WaitForChild("Networking")
     :WaitForChild("Units")
     :WaitForChild("SummonEvent")
@@ -205,7 +201,6 @@ local summonEvent = rep:WaitForChild("Networking")
 local summonArgs = {"SummonMany", "Spring26", 10}
 local summonArgs50 = {"SummonMany", "Spring26", 50}
 
--- 🔹 Summon Memoria
 local memoriaArgs = {"SummonMany", "SpringMemoria", 10}
 local memoriaArgs50 = {"SummonMany", "SpringMemoria", 50}
 
@@ -221,28 +216,24 @@ function SkyTweenTo(targetCF)
 
     local upHeight = 120
 
-    -- ขึ้น
     local up = TweenService:Create(hrp, TweenInfo.new(0.8), {
         CFrame = hrp.CFrame + Vector3.new(0, upHeight, 0)
     })
     up:Play()
     up.Completed:Wait()
 
-    -- ไป
     local mid = TweenService:Create(hrp, TweenInfo.new(1), {
         CFrame = targetCF + Vector3.new(0, upHeight, 0)
     })
     mid:Play()
     mid.Completed:Wait()
 
-    -- ลง (สำคัญ: ใช้ offset ก่อน)
     local down = TweenService:Create(hrp, TweenInfo.new(0.8), {
         CFrame = targetCF + Vector3.new(0, 3, 0)
     })
     down:Play()
     down.Completed:Wait()
 
-    -- fix ตำแหน่งสุดท้าย
     hrp.CFrame = targetCF
 end
 
@@ -260,10 +251,8 @@ local function ClickGuiCenter(guiObject)
     local x = absPos.X + absSize.X / 2
     local y = absPos.Y + absSize.Y / 2
 
-    -- กด
     VirtualInputManager:SendMouseButtonEvent(x, y, 0, true, game, 0)
     task.wait()
-    -- ปล่อย
     VirtualInputManager:SendMouseButtonEvent(x, y, 0, false, game, 0)
 end
 
@@ -274,7 +263,6 @@ local function clickCenterScreenSafe()
     local x = size.X / 2
     local y = size.Y / 2
 
-    -- ยิงเข้า CoreGui → ไม่โดน GUI เกม
     VirtualInputManager:SendMouseButtonEvent(x, y, 0, true, game:GetService("CoreGui"), 0)
     task.wait()
     VirtualInputManager:SendMouseButtonEvent(x, y, 0, false, game:GetService("CoreGui"), 0)
@@ -287,11 +275,9 @@ local GuiService = game:GetService("GuiService")
 local function SelectDialogueOption(btn)
     if not btn then return end
 
-    -- ตั้ง focus ไปที่ปุ่ม
     GuiService.SelectedObject = btn
     task.wait()
 
-    -- 🔥 จำลองการกด Enter (เลือก option)
     game:GetService("VirtualInputManager"):SendKeyEvent(true, Enum.KeyCode.Return, false, game)
     task.wait()
     game:GetService("VirtualInputManager"):SendKeyEvent(false, Enum.KeyCode.Return, false, game)
@@ -318,7 +304,6 @@ function DoEnemyIndexFlow_Sky()
 
         local light = play:WaitForChild("Lights / Lighting")
 
-        -- ⚠️ ใช้ index แต่กันพัง
         local children = light:GetChildren()
         local target = children[9]
 
@@ -327,7 +312,6 @@ function DoEnemyIndexFlow_Sky()
         end
     end)
 
-    -- ถ้าหาเจอ → บินไปก่อน
     if lightTargetCF then
         print("🌟 Tween ไป Lights / Lighting ก่อน")
         SkyTweenTo(lightTargetCF)
@@ -337,7 +321,7 @@ function DoEnemyIndexFlow_Sky()
     end
     
     -- =========================
-    -- 🔥 SNAP ไปหา NPC ทันที
+    -- 🔥 SNAP ไปหา NPC
     -- =========================
     local npc = workspace:WaitForChild("MainLobby")
         :WaitForChild("NPC")
@@ -346,42 +330,22 @@ function DoEnemyIndexFlow_Sky()
     local hrp = (Players.LocalPlayer.Character or Players.LocalPlayer.CharacterAdded:Wait())
         :WaitForChild("HumanoidRootPart")
 
-    local npcPos = npc:GetPivot().Position
-
-    -- รอให้นิ่งจริง
-    task.wait(0.5)
-
-    --========================
-    -- 🔥 ยิง Proximity (เวอร์ชันเสถียร)
-    --========================
-    local npc = workspace:WaitForChild("MainLobby")
-        :WaitForChild("NPC")
-        :WaitForChild("Okabu")
-
-    local prompt = npc:WaitForChild("EnemyIndex")
-
     -- 📍 ใช้ Pivot แทน (แม่นกว่า)
     local npcPos = npc:GetPivot().Position
 
-    -- 🔒 บังคับ snap เข้าใกล้ (กันพลาด)
+    -- 🔒 บังคับ snap เข้าใกล้
     hrp.CFrame = CFrame.new(npcPos + Vector3.new(0, 3, -5))
+    task.wait(0.5)
 
-    task.wait(0.3)
-
-    local dist = (hrp.Position - npcPos).Magnitude
-    print("Distance to Okabu:", dist)
-
-    if dist <= 20 then
-        fireproximityprompt(prompt, 2)
-        print("✅ Fired Proximity")
-    else
-        warn("❌ ยังไกลเกิน:", dist)
-    end
+    -- กด E แทน fireproximityprompt
+    VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.E, false, game)
+    task.wait(0.1)
+    VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.E, false, game)
+    print("✅ กด E แล้ว")
 
     --========================
-    -- เร่ง Dialogue (เวอร์ชันใหม่)
+    -- เร่ง Dialogue
     --========================
-
     local gui = player:WaitForChild("PlayerGui")
 
     local dialogue
@@ -398,31 +362,27 @@ function DoEnemyIndexFlow_Sky()
     local btn
 
     repeat
-        -- spam click เผื่อระบบเร่ง
         ClickGuiCenter(content)
 
-        -- 🔥 หา button ทุก loop
         local opt = options:FindFirstChild("Option1")
         btn = opt and (opt:FindFirstChild("Enemy Index") or opt:FindFirstChildWhichIsA("TextButton"))
 
-        -- 🔥 ถ้าพร้อมกดก็เลือก
         if btn and btn.Visible and btn.Active then
             SelectDialogueOption(btn)
         end
 
-        task.wait(1) -- กันเฟรมค้าง
-    until playerGui:FindFirstChild("EnemyIndex") -- loop จน EnemyIndex GUI ขึ้น
+        task.wait(1)
+    until playerGui:FindFirstChild("EnemyIndex")
 
     print("✅ EnemyIndex GUI ขึ้นแล้ว!")
 
     --========================
-    -- Milestones (แก้ให้รอจนขึ้น EnemyMilestones GUI)
+    -- Milestones
     --========================
     local playerGui = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")
     local buttonEMS
 
     repeat
-        -- พยายามหา Button
         local enemyIndexGui = playerGui:FindFirstChild("EnemyIndex")
         if enemyIndexGui and enemyIndexGui.Main and enemyIndexGui.Main.Milestones then
             buttonEMS = enemyIndexGui.Main.Milestones:FindFirstChild("Button")
@@ -438,8 +398,8 @@ function DoEnemyIndexFlow_Sky()
             end
         end
 
-        task.wait(2) -- กันเฟรมค้าง
-    until playerGui:FindFirstChild("EnemyMilestones") -- loop จน GUI EnemyMilestones ขึ้น
+        task.wait(2)
+    until playerGui:FindFirstChild("EnemyMilestones")
 
     print("✅ EnemyMilestones GUI ขึ้นแล้ว!")
 end
@@ -462,7 +422,6 @@ local function hasUnclaimedMilestone()
 
     print("✅ เช็ค EnemyMilestones")
 
-    -- เช็ค Index อื่น ๆ (ไม่รวมการบังคับ 312 แล้ว)
     local checkIndexes = {4,5,6,9,10,11,12,13,14,15,16,17}
     for _, i in ipairs(checkIndexes) do
         local item = list:FindFirstChild(tostring(i)) or list:GetChildren()[i]
@@ -480,10 +439,9 @@ local function hasUnclaimedMilestone()
 end
 
 -- =========================
--- Play Custom Level (สุ่มระหว่าง 1334 กับ 312)
+-- Play Custom Level
 -- =========================
 local function playMilestoneLevel()
-    -- สุ่ม 50% ระหว่าง 1334 และ 312
     local levelId = math.random(1, 2) == 1 and 1334 or 312
 
     print("🎲 สุ่มด่าน Milestone → เล่นด่าน ID:", levelId)
@@ -498,7 +456,7 @@ local function playMilestoneLevel()
 end
 
 -- =========================
--- ลูปหลัก (เพิ่ม pcall ห่อเพื่อป้องกัน crash)
+-- ลูปหลัก
 -- =========================
 task.spawn(function()
     while true do
@@ -512,7 +470,6 @@ task.spawn(function()
 
 			-- ✅ FarmOnly mode
             if Config.FarmOnly then
-    			-- ✅ เช็คเลเวลก่อนเสมอ ถ้ายังไม่ถึง 11 ให้ฟาร์ม Story ก่อน
     			if level < 11 then
         			print("🌾 FarmOnly: เลเวลยังไม่ถึง 11 → ฟาร์ม Story ก่อน")
         			local Add = {
@@ -587,10 +544,6 @@ task.spawn(function()
 				return
 			end
 
-            -- ❌ ไม่เข้า Story แล้ว ไม่สน Level
-            -- ทำแต่ Winter เท่านั้น
-
-            -- ✅ ถ้าเลเวล ≥ 11 ต้องสุ่มให้หมดก่อนทำอะไร
             if level >= 11 and Flowers26 >= 1500 then
                 if Flowers26 < 7500 then
                     print("🎲 เลเวล ≥ 11 สุ่มให้หมดก่อน | Flowers26:", Flowers26)
@@ -635,10 +588,8 @@ task.spawn(function()
                         GoSpring()
                     end
                 else
-                    -- ได้ unit แล้ว แต่เลเวลยังไม่ถึง LockLV
                     local memoria = hasMemoria()
                     if memoria then
-                        -- ได้ทั้ง unit และ Memoria แล้ว → ฟาร์ม Story
                         print("📈 ได้ unit + Memoria แล้ว แต่เลเวล", level, "ยังไม่ถึง", Config.LockLV, "→ ฟาร์ม Story")
                         local Add = {
                             [1] = "AddMatch",
@@ -655,7 +606,6 @@ task.spawn(function()
                         local ST = {[1] = "StartMatch"}
                         game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("LobbyEvent"):FireServer(unpack(ST))
                     else
-                        -- ยังไม่ได้ Memoria → summon ต่อ
                         if Flowers26 >= 1500 and Flowers26 < 7500 then
                             summonEvent:FireServer(unpack(summonArgs))
                             task.wait(0.1)
