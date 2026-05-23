@@ -660,7 +660,7 @@ task.spawn(function()
         end
 
         local springXP = getSpringXP()
-        local isHighXP = springXP and springXP >= 210
+        local isHighXP = springXP and springXP == math.huge
 
         -- RESET (WAVE 0)
         if wave == 0 then
