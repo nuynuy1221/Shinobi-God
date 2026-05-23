@@ -606,18 +606,9 @@ task.spawn(function()
                         local ST = {[1] = "StartMatch"}
                         game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("LobbyEvent"):FireServer(unpack(ST))
                     else
-                        if Flowers26 >= 1500 and Flowers26 < 7500 then
-                            summonEvent:FireServer(unpack(summonArgs))
-                            task.wait(0.1)
-                        elseif Flowers26 >= 7500 then
-                            summonEvent:FireServer(unpack(summonArgs50))
-                            task.wait(0.1)
-                            clickCenterScreenSafe()
-                        else
-                            print("📈 ยังไม่ได้ Memoria ไปฟาร์ม Spring")
-                            task.wait(60)
-                            GoSpring()
-                        end
+                        print("📈 ยังไม่ได้ Memoria → ไปฟาร์ม Spring เลย")
+                        task.wait(60)
+                        GoSpring()
                     end
                 end
             else
