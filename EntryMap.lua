@@ -199,10 +199,10 @@ local summonEvent = rep:WaitForChild("Networking")
     :WaitForChild("SummonEvent")
 
 local summonArgs = {"SummonMany", "Spring26", 10}
-local summonArgs50 = {"SummonMany", "Spring26", 50}
+local summonArgs50 = {"SummonMany", "Spring26", 49}
 
 local memoriaArgs = {"SummonMany", "SpringMemoria", 10}
-local memoriaArgs50 = {"SummonMany", "SpringMemoria", 49}
+local memoriaArgs50 = {"SummonMany", "SpringMemoria", 50}
 
 -- =========================
 -- Click Enemy Index Milestone
