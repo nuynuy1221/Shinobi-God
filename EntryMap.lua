@@ -202,7 +202,7 @@ local summonArgs = {"SummonMany", "Spring26", 10}
 local summonArgs50 = {"SummonMany", "Spring26", 50}
 
 local memoriaArgs = {"SummonMany", "SpringMemoria", 10}
-local memoriaArgs50 = {"SummonMany", "SpringMemoria", 50}
+local memoriaArgs50 = {"SummonMany", "SpringMemoria", 49}
 
 -- =========================
 -- Click Enemy Index Milestone
