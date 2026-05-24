@@ -7,7 +7,6 @@ if game.PlaceId ~= targetPlace then
     return
 end
 
--- RESET CONFIG ถ้าไม่ได้ตั้งเอง
 if getgenv().Config == nil then
     getgenv().Config = {
         BuyMemoria = false,
@@ -30,115 +29,56 @@ if type(Config) ~= "table" then
     getgenv().Config = Config
 end
 
--- บังคับให้เปิดได้เฉพาะ true เท่านั้น
 Config.BuyMemoria = (Config.BuyMemoria == true)
-Config.CustomRR = (Config.CustomRR == true)
+Config.CustomRR   = (Config.CustomRR == true)
+Config.FarmOnly   = (Config.FarmOnly == true)
+if type(Config.FarmOnlyFlowers26) ~= "number" then Config.FarmOnlyFlowers26 = 0 end
+if type(Config.LockLV) ~= "number" then Config.LockLV = nil end
+if Config.RestartMethod == nil then Config.RestartMethod = true end
 
--- FarmOnly
-Config.FarmOnly = (Config.FarmOnly == true)
-if type(Config.FarmOnlyFlowers26) ~= "number" then
-    Config.FarmOnlyFlowers26 = 0
-end
+if Config.RestartMethod == true then print("⏩ เข้าฟาร์มแบบ Restart") end
+if Config.RestartMethod ~= true then return end
 
--- LockLV ต้องเป็นตัวเลขเท่านั้น
-if type(Config.LockLV) ~= "number" then
-    Config.LockLV = nil
-end
-
-if Config.RestartMethod == nil then
-    Config.RestartMethod = true
-end
-
--- ต้องเป็น true เท่านั้นถึงรัน
-if Config.RestartMethod == true then
-    print("⏩ เข้าฟาร์มแบบ Restart")
-end
-
-if Config.RestartMethod ~= true then
-    return
-end
-
-local Players = game:GetService("Players")
-local player = Players.LocalPlayer
-local rep = game:GetService("ReplicatedStorage")
+local Players  = game:GetService("Players")
+local player   = Players.LocalPlayer
+local rep      = game:GetService("ReplicatedStorage")
 local playerGui = player:WaitForChild("PlayerGui", 10)
 
--- =========================
--- ฟังก์ชันดึงเลเวลจาก Attribute (เสถียรกว่า GUI)
--- =========================
 local function getLevel()
-    local possibleLevelNames = {
-        "Level",
-        "PlayerLevel",
-        "level",
-        "playerLevel",
-        "CurrentLevel"
-    }
-    
-    for _, name in ipairs(possibleLevelNames) do
-        local value = player:GetAttribute(name)
-        if value ~= nil then
-            local num = tonumber(value)
-            if num then
-                print("พบ Level จาก Attribute:", name, "=", num)
-                return num
-            end
+    local names = {"Level","PlayerLevel","level","playerLevel","CurrentLevel"}
+    for _, name in ipairs(names) do
+        local v = player:GetAttribute(name)
+        if v ~= nil then
+            local n = tonumber(v)
+            if n then return n end
         end
     end
-    
-    warn("ไม่พบ Attribute Level — fallback ไปเช็ค GUI")
-    local success, levelLabel = pcall(function()
-        return playerGui:WaitForChild("HUD", 5)
-                     :WaitForChild("Main", 5)
-                     :WaitForChild("Level", 5)
+    local ok, lbl = pcall(function()
+        return playerGui:WaitForChild("HUD",5):WaitForChild("Main",5):WaitForChild("Level",5)
     end)
-    
-    if success and levelLabel and levelLabel:IsA("TextLabel") then
-        local text = levelLabel.Text or ""
-        local num = text:match("%d+")
-        return tonumber(num) or 0
+    if ok and lbl and lbl:IsA("TextLabel") then
+        return tonumber(lbl.Text:match("%d+")) or 0
     end
-    
     return 0
 end
 
--- =========================
--- ฟังก์ชัน WinterEvent
--- =========================
 local function GoSpring()
-    print("🔥 Level ≥ 11 → Spring Event")
-    
+    print("🌸 ไปฟาร์ม Spring")
     local SpringEvent = rep:WaitForChild("Networking"):WaitForChild("SpringEvent"):WaitForChild("Teleport")
-    local lobbyEvent = rep:WaitForChild("Networking"):WaitForChild("LobbyEvent")
-    
-	pcall(function() SpringEvent:FireServer("Create") end)
+    local lobbyEvent  = rep:WaitForChild("Networking"):WaitForChild("LobbyEvent")
+    pcall(function() SpringEvent:FireServer("Create") end)
     task.wait(3)
     pcall(function() lobbyEvent:FireServer("StartMatch") end)
 end
 
--- =========================
--- เช็ค Flowers26
--- =========================
 local function getFlowers26()
-    local value = player:GetAttribute("Flowers26")
-    if value ~= nil then
-        return tonumber(value) or 0
-    end
-    return 0
+    return tonumber(player:GetAttribute("Flowers26")) or 0
 end
 
--- =========================
--- เช็ค Shinobi God
--- =========================
 local function hasShinobiGod()
-
-    if game.PlaceId ~= 16146832113 then
-        return false
-    end
-
+    if game.PlaceId ~= 16146832113 then return false end
     local items
     local start = tick()
-
     repeat
         local ok
         ok, items = pcall(function()
@@ -147,312 +87,177 @@ local function hasShinobiGod()
         end)
         task.wait(0.5)
     until items or tick() - start > 15
-
-    if not items then
-        warn("[Shinobi God] ❌ Items not loaded")
-        return false
-    end
-
+    if not items then warn("[Shinobi God] ❌ Items not loaded") return false end
     for _, cache in ipairs(items:GetChildren()) do
         if cache.Name == "CacheContainer" then
             for _, uuid in ipairs(cache:GetChildren()) do
                 local holder = uuid:FindFirstChild("Container")
                     and uuid.Container:FindFirstChild("Holder")
-
                 if holder and holder:FindFirstChild("Shinobi God (Infinite Dreams)") then
-                    print("✅ FOUND Shinobi God")
-                    return true
+                    print("✅ FOUND Shinobi God") return true
                 end
             end
         end
     end
-
     return false
 end
 
--- =========================
--- เช็ค Dream Conqueror Memoria
--- =========================
 local function hasMemoria()
     local windows = playerGui:FindFirstChild("Windows")
-    if not windows then
-        warn("[hasMemoria] Windows ยังไม่โหลด → ถือว่ายังไม่ได้")
-        return false
-    end
-
+    if not windows then warn("[hasMemoria] Windows ยังไม่โหลด") return false end
     local ok, result = pcall(function()
         return windows.Titles.Holder.List.Main["Dream Conqueror"].Equip:FindFirstChild("Locked")
     end)
-
-    if not ok then
-        return true
-    end
-
+    if not ok then return true end
     return result == nil
 end
 
--- =========================
--- Summon Event
--- =========================
-local summonEvent = rep:WaitForChild("Networking")
-    :WaitForChild("Units")
-    :WaitForChild("SummonEvent")
-
-local summonArgs = {"SummonMany", "Spring26", 10}
+local summonEvent  = rep:WaitForChild("Networking"):WaitForChild("Units"):WaitForChild("SummonEvent")
+local summonArgs   = {"SummonMany", "Spring26", 10}
 local summonArgs50 = {"SummonMany", "Spring26", 49}
 
-local memoriaArgs = {"SummonMany", "SpringMemoria", 10}
-local memoriaArgs50 = {"SummonMany", "SpringMemoria", 50}
+local TweenService        = game:GetService("TweenService")
+local VirtualInputManager = game:GetService("VirtualInputManager")
+local GuiService          = game:GetService("GuiService")
+local Camera              = workspace.CurrentCamera
 
--- =========================
--- Click Enemy Index Milestone
--- =========================
-local TweenService = game:GetService("TweenService")
+local function clickCenterScreenSafe()
+    if not Camera then return end
+    local size = Camera.ViewportSize
+    VirtualInputManager:SendMouseButtonEvent(size.X/2, size.Y/2, 0, true,  game:GetService("CoreGui"), 0)
+    task.wait()
+    VirtualInputManager:SendMouseButtonEvent(size.X/2, size.Y/2, 0, false, game:GetService("CoreGui"), 0)
+    print("🖱️ Click กลางจอ")
+end
+
+local function ClickGuiCenter(guiObject)
+    if not guiObject or not guiObject:IsA("GuiObject") then return end
+    local x = guiObject.AbsolutePosition.X + guiObject.AbsoluteSize.X / 2
+    local y = guiObject.AbsolutePosition.Y + guiObject.AbsoluteSize.Y / 2
+    VirtualInputManager:SendMouseButtonEvent(x, y, 0, true,  game, 0)
+    task.wait()
+    VirtualInputManager:SendMouseButtonEvent(x, y, 0, false, game, 0)
+end
+
+local function SelectDialogueOption(btn)
+    if not btn then return end
+    GuiService.SelectedObject = btn
+    task.wait()
+    VirtualInputManager:SendKeyEvent(true,  Enum.KeyCode.Return, false, game)
+    task.wait()
+    VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Return, false, game)
+end
 
 function SkyTweenTo(targetCF)
-    local player = Players.LocalPlayer
-    local char = player.Character or player.CharacterAdded:Wait()
-    local hrp = char:WaitForChild("HumanoidRootPart")
-
-    local upHeight = 120
-
-    local up = TweenService:Create(hrp, TweenInfo.new(0.8), {
-        CFrame = hrp.CFrame + Vector3.new(0, upHeight, 0)
-    })
-    up:Play()
-    up.Completed:Wait()
-
-    local mid = TweenService:Create(hrp, TweenInfo.new(1), {
-        CFrame = targetCF + Vector3.new(0, upHeight, 0)
-    })
-    mid:Play()
-    mid.Completed:Wait()
-
-    local down = TweenService:Create(hrp, TweenInfo.new(0.8), {
-        CFrame = targetCF + Vector3.new(0, 3, 0)
-    })
-    down:Play()
-    down.Completed:Wait()
-
+    local char = Players.LocalPlayer.Character or Players.LocalPlayer.CharacterAdded:Wait()
+    local hrp  = char:WaitForChild("HumanoidRootPart")
+    local up   = 120
+    TweenService:Create(hrp, TweenInfo.new(0.8), {CFrame = hrp.CFrame + Vector3.new(0,up,0)}):Play()
+    task.wait(0.8)
+    TweenService:Create(hrp, TweenInfo.new(1),   {CFrame = targetCF + Vector3.new(0,up,0)}):Play()
+    task.wait(1)
+    TweenService:Create(hrp, TweenInfo.new(0.8), {CFrame = targetCF + Vector3.new(0,3,0)}):Play()
+    task.wait(0.8)
     hrp.CFrame = targetCF
 end
 
 local isRunningEnemyFlow = false
 
-local VirtualInputManager = game:GetService("VirtualInputManager")
-local Camera = workspace.CurrentCamera
-
-local function ClickGuiCenter(guiObject)
-    if not guiObject or not guiObject:IsA("GuiObject") then return end
-
-    local absPos = guiObject.AbsolutePosition
-    local absSize = guiObject.AbsoluteSize
-
-    local x = absPos.X + absSize.X / 2
-    local y = absPos.Y + absSize.Y / 2
-
-    VirtualInputManager:SendMouseButtonEvent(x, y, 0, true, game, 0)
-    task.wait()
-    VirtualInputManager:SendMouseButtonEvent(x, y, 0, false, game, 0)
-end
-
-local function clickCenterScreenSafe()
-    if not Camera then return end
-
-    local size = Camera.ViewportSize
-    local x = size.X / 2
-    local y = size.Y / 2
-
-    VirtualInputManager:SendMouseButtonEvent(x, y, 0, true, game:GetService("CoreGui"), 0)
-    task.wait()
-    VirtualInputManager:SendMouseButtonEvent(x, y, 0, false, game:GetService("CoreGui"), 0)
-
-    print("🖱️ Click กลางจอ")
-end
-
-local GuiService = game:GetService("GuiService")
-
-local function SelectDialogueOption(btn)
-    if not btn then return end
-
-    GuiService.SelectedObject = btn
-    task.wait()
-
-    game:GetService("VirtualInputManager"):SendKeyEvent(true, Enum.KeyCode.Return, false, game)
-    task.wait()
-    game:GetService("VirtualInputManager"):SendKeyEvent(false, Enum.KeyCode.Return, false, game)
-
-    print("✅ เลือก Enemy Index ผ่านระบบเกม")
-end
-
 function DoEnemyIndexFlow_Sky()
     if isRunningEnemyFlow then return false end
     isRunningEnemyFlow = true
 
-    local player = Players.LocalPlayer
-    local hrp = (player.Character or player.CharacterAdded:Wait()):WaitForChild("HumanoidRootPart")
+    local hrp = (Players.LocalPlayer.Character or Players.LocalPlayer.CharacterAdded:Wait()):WaitForChild("HumanoidRootPart")
 
-    -- =========================
-    -- 🔥 ไปหา Lights / Lighting ก่อน
-    -- =========================
     local lightTargetCF
-
     pcall(function()
-        local play = workspace:WaitForChild("MainLobby")
-            :WaitForChild("Gamemodes")
-            :WaitForChild("Play")
-
-        local light = play:WaitForChild("Lights / Lighting")
-
-        local children = light:GetChildren()
-        local target = children[9]
-
-        if target then
-            lightTargetCF = target:GetPivot()
-        end
+        local children = workspace:WaitForChild("MainLobby"):WaitForChild("Gamemodes"):WaitForChild("Play"):WaitForChild("Lights / Lighting"):GetChildren()
+        if children[9] then lightTargetCF = children[9]:GetPivot() end
     end)
+    if lightTargetCF then SkyTweenTo(lightTargetCF) task.wait(1.5)
+    else warn("❌ หา Lights ไม่เจอ") end
 
-    if lightTargetCF then
-        print("🌟 Tween ไป Lights / Lighting ก่อน")
-        SkyTweenTo(lightTargetCF)
-        task.wait(1.5)
-    else
-        warn("❌ หา Lights ไม่เจอ ข้ามไป NPC เลย")
-    end
-    
-    -- =========================
-    -- 🔥 SNAP ไปหา NPC
-    -- =========================
-    local npc = workspace:WaitForChild("MainLobby")
-        :WaitForChild("NPC")
-        :WaitForChild("Okabu")
-
-    local hrp = (Players.LocalPlayer.Character or Players.LocalPlayer.CharacterAdded:Wait())
-        :WaitForChild("HumanoidRootPart")
-
-    -- 📍 ใช้ Pivot แทน (แม่นกว่า)
+    local npc    = workspace:WaitForChild("MainLobby"):WaitForChild("NPC"):WaitForChild("Okabu")
     local npcPos = npc:GetPivot().Position
-
-    -- 🔒 บังคับ snap เข้าใกล้
-    hrp.CFrame = CFrame.new(npcPos + Vector3.new(0, 3, -5))
+    hrp = (Players.LocalPlayer.Character or Players.LocalPlayer.CharacterAdded:Wait()):WaitForChild("HumanoidRootPart")
+    hrp.CFrame = CFrame.new(npcPos + Vector3.new(0,3,-5))
     task.wait(0.5)
-
-    -- กด E แทน fireproximityprompt
-    VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.E, false, game)
+    VirtualInputManager:SendKeyEvent(true,  Enum.KeyCode.E, false, game)
     task.wait(0.1)
     VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.E, false, game)
-    print("✅ กด E แล้ว")
 
-    --========================
-    -- เร่ง Dialogue
-    --========================
     local gui = player:WaitForChild("PlayerGui")
-
     local dialogue
-    repeat
-        dialogue = gui:FindFirstChild("Dialogue")
-        task.wait()
-    until dialogue
-    
+    repeat dialogue = gui:FindFirstChild("Dialogue") task.wait() until dialogue
     local content = dialogue.Dialogue:WaitForChild("Content")
     local options = dialogue.Dialogue:WaitForChild("Options")
-
-    print("🖱️ เร่งบทจนกว่าจะเลือกได้...")
-
     local btn
-
     repeat
         ClickGuiCenter(content)
-
         local opt = options:FindFirstChild("Option1")
         btn = opt and (opt:FindFirstChild("Enemy Index") or opt:FindFirstChildWhichIsA("TextButton"))
-
-        if btn and btn.Visible and btn.Active then
-            SelectDialogueOption(btn)
-        end
-
+        if btn and btn.Visible and btn.Active then SelectDialogueOption(btn) end
         task.wait(1)
     until playerGui:FindFirstChild("EnemyIndex")
 
-    print("✅ EnemyIndex GUI ขึ้นแล้ว!")
-
-    --========================
-    -- Milestones
-    --========================
-    local playerGui = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")
     local buttonEMS
-
     repeat
-        local enemyIndexGui = playerGui:FindFirstChild("EnemyIndex")
-        if enemyIndexGui and enemyIndexGui.Main and enemyIndexGui.Main.Milestones then
-            buttonEMS = enemyIndexGui.Main.Milestones:FindFirstChild("Button")
+        local ei = playerGui:FindFirstChild("EnemyIndex")
+        if ei and ei.Main and ei.Main.Milestones then
+            buttonEMS = ei.Main.Milestones:FindFirstChild("Button")
             if buttonEMS then
                 buttonEMS.Selectable = true
                 GuiService.SelectedCoreObject = buttonEMS
-
-                VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Return, false, game)
+                VirtualInputManager:SendKeyEvent(true,  Enum.KeyCode.Return, false, game)
                 VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Return, false, game)
-
                 wait(0.1)
                 GuiService.SelectedCoreObject = nil
             end
         end
-
         task.wait(2)
     until playerGui:FindFirstChild("EnemyMilestones")
-
-    print("✅ EnemyMilestones GUI ขึ้นแล้ว!")
 end
 
 local function hasUnclaimedMilestone()
     DoEnemyIndexFlow_Sky()
-   
     local enemyGui = player.PlayerGui:FindFirstChild("EnemyMilestones")
-    if not enemyGui then
-        warn("❌ EnemyMilestones GUI ยังไม่โหลด")
-        return false
-    end
-
-    local holder = enemyGui:FindFirstChild("Holder")
-    local list = holder and holder:FindFirstChild("List")
-    if not list then
-        warn("❌ หา List ไม่เจอ")
-        return false
-    end
-
-    print("✅ เช็ค EnemyMilestones")
-
-    local checkIndexes = {4,5,6,9,10,11,12,13,14,15,16,17}
-    for _, i in ipairs(checkIndexes) do
+    if not enemyGui then warn("❌ EnemyMilestones GUI ยังไม่โหลด") return false end
+    local list = enemyGui:FindFirstChild("Holder") and enemyGui.Holder:FindFirstChild("List")
+    if not list then warn("❌ หา List ไม่เจอ") return false end
+    for _, i in ipairs({4,5,6,9,10,11,12,13,14,15,16,17}) do
         local item = list:FindFirstChild(tostring(i)) or list:GetChildren()[i]
         if item then
             local label = item:FindFirstChild("Button") and item.Button:FindFirstChild("Label")
             if label and label:IsA("TextLabel") and label.Text ~= "Claimed" then
-                print("❗ เจอ Milestone ยังไม่รับที่ Index:", i)
-                return true
+                print("❗ Milestone ยังไม่รับ Index:", i) return true
             end
         end
     end
-
-    print("✅ ไม่มี Milestone ค้าง")
-    return false
+    print("✅ ไม่มี Milestone ค้าง") return false
 end
 
--- =========================
--- Play Custom Level
--- =========================
 local function playMilestoneLevel()
-    local levelId = math.random(1, 2) == 1 and 1334 or 312
-
-    print("🎲 สุ่มด่าน Milestone → เล่นด่าน ID:", levelId)
-
+    local levelId = math.random(1,2) == 1 and 1334 or 312
+    print("🎲 สุ่มด่าน Milestone ID:", levelId)
     pcall(function()
-        game:GetService("ReplicatedStorage")
-            :WaitForChild("Networking")
-            :WaitForChild("Levels")
-            :WaitForChild("Play")
-            :FireServer(levelId)
+        rep:WaitForChild("Networking"):WaitForChild("Levels"):WaitForChild("Play"):FireServer(levelId)
     end)
+end
+
+local function farmStory()
+    local Add = {
+        [1] = "AddMatch",
+        [2] = {
+            ["Difficulty"] = "Normal",
+            ["Act"]        = "Act1",
+            ["StageType"]  = "Story",
+            ["Stage"]      = "Stage1",
+            ["FriendsOnly"] = false
+        }
+    }
+    rep:WaitForChild("Networking"):WaitForChild("LobbyEvent"):FireServer(unpack(Add))
+    task.wait(2)
+    rep:WaitForChild("Networking"):WaitForChild("LobbyEvent"):FireServer("StartMatch")
 end
 
 -- =========================
@@ -461,178 +266,112 @@ end
 task.spawn(function()
     while true do
         local DelayCheck = 0.2
-        local success, err = pcall(function()
-            
-            local level = getLevel()
+        local ok, err = pcall(function()
+
+            local level    = getLevel()
             local Flowers26 = getFlowers26()
 
-            local hasUnit = hasShinobiGod()
-
-			-- ✅ FarmOnly mode
+            -- ============ FarmOnly mode ============
             if Config.FarmOnly then
-    			if level < 11 then
-        			print("🌾 FarmOnly: เลเวลยังไม่ถึง 11 → ฟาร์ม Story ก่อน")
-        			local Add = {
-            			[1] = "AddMatch",
-            			[2] = {
-                			["Difficulty"] = "Normal",
-                			["Act"] = "Act1",
-                			["StageType"] = "Story",
-                			["Stage"] = "Stage1",
-                			["FriendsOnly"] = false
-            			}
-        			}
-        			game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("LobbyEvent"):FireServer(unpack(Add))
-        			task.wait(2)
-        			local ST = {[1] = "StartMatch"}
-        			game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("LobbyEvent"):FireServer(unpack(ST))
-        			return
-    			end
+                if level < 11 then
+                    print("🌾 FarmOnly: เลเวลยังไม่ถึง 11 → ฟาร์ม Story")
+                    farmStory()
+                    return
+                end
+                if Flowers26 >= Config.FarmOnlyFlowers26 then
+                    print("🌾 FarmOnly: Flowers26 ครบ → หยุดฟาร์ม")
+                    DelayCheck = 600
+                    task.wait(60)
+                    GoSpring()
+                else
+                    print("🌾 FarmOnly: ฟาร์ม Spring | Flowers26:", Flowers26, "/", Config.FarmOnlyFlowers26)
+                    task.wait(60)
+                    GoSpring()
+                end
+                return
+            end
 
-    			if Flowers26 >= Config.FarmOnlyFlowers26 then
-        			print("🌾 FarmOnly: Flowers26 ครบแล้ว", Flowers26, "/", Config.FarmOnlyFlowers26, "→ หยุดฟาร์ม")
-        			DelayCheck = 600
-        			task.wait(60)
-        			GoSpring()
-    			else
-        			print("🌾 FarmOnly: ฟาร์ม Spring | Flowers26:", Flowers26, "/", Config.FarmOnlyFlowers26)
-        			task.wait(60)
-        			GoSpring()
-    			end
-    			return
-			end
-
-            print(
-                "🧠 Decision | Level:", level,
-                "| Flowers26:", Flowers26,
-                "| Has Unit:", hasUnit,
-                "| BuyMemoria:", Config.BuyMemoria
-            )
-                    
-            -- ✅ เช็ค Milestone ก่อนทุกอย่าง
+            -- ============ เช็ค Milestone ============
             if Config.CustomRR then
-                if level >= 30 then
-                    if hasUnclaimedMilestone() then
-                        task.wait(5)
-                        playMilestoneLevel()
-                        print("💠 ไปเก็บ Enemy Index")
-                        task.wait(5)
-                        return
-                    end
+                if level >= 30 and hasUnclaimedMilestone() then
+                    task.wait(5)
+                    playMilestoneLevel()
+                    print("💠 ไปเก็บ Enemy Index")
+                    task.wait(5)
+                    return
                 end
             else
                 print("⏭️ ข้าม Enemy Milestone เพราะปิด CustomRR")
             end
 
-			if level < 11 then
-				local Add = {
-    				[1] = "AddMatch",
-    				[2] = {
-        				["Difficulty"] = "Normal",
-        				["Act"] = "Act1",
-        				["StageType"] = "Story",
-        				["Stage"] = "Stage1",
-        				["FriendsOnly"] = false
-    				}
-				}
-				game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("LobbyEvent"):FireServer(unpack(Add))
-				task.wait(2)
-				local ST = {
-    				[1] = "StartMatch"
-				}
-				game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("LobbyEvent"):FireServer(unpack(ST))
-				return
-			end
+            print("🧠 Level:", level, "| Flowers26:", Flowers26)
 
-            if level >= 11 and Flowers26 >= 1500 then
-                if Flowers26 < 7500 then
-                    print("🎲 เลเวล ≥ 11 สุ่มให้หมดก่อน | Flowers26:", Flowers26)
+            -- ============ Step 1: เลเวลยังไม่ถึง 11 → ฟาร์ม Story ============
+            if level < 11 then
+                print("📖 Level < 11 → ฟาร์ม Story")
+                farmStory()
+                return
+            end
+
+            -- ============ Step 2: เช็ค Memoria ============
+            local memoria = hasMemoria()
+
+            if not memoria then
+                print("📈 ยังไม่ได้ Memoria → ไปฟาร์ม Spring")
+                task.wait(60)
+                GoSpring()
+                return
+            end
+
+            -- ============ Step 3: ได้ Memoria แล้ว → เช็ค Unit ============
+            local hasUnit = hasShinobiGod()
+
+            if not hasUnit then
+                -- ยังไม่มี unit → สุ่มถ้ามี Flowers26 ไม่งั้นไปฟาร์ม Spring
+                if Flowers26 >= 1500 and Flowers26 < 7500 then
+                    print("🎲 ได้ Memoria แล้ว สุ่ม 10 | Flowers26:", Flowers26)
                     summonEvent:FireServer(unpack(summonArgs))
                     task.wait(0.1)
-                else
-                    print("🎲 เลเวล ≥ 11 สุ่ม 50 | Flowers26:", Flowers26)
+                elseif Flowers26 >= 7500 then
+                    print("🎲 ได้ Memoria แล้ว สุ่ม 49 | Flowers26:", Flowers26)
                     summonEvent:FireServer(unpack(summonArgs50))
                     task.wait(0.1)
                     clickCenterScreenSafe()
+                else
+                    print("❌ Flowers26 ไม่พอ → ไปฟาร์ม Spring")
+                    task.wait(60)
+                    GoSpring()
                 end
                 return
             end
 
-            if hasUnit then
-                if not Config.LockLV then
-                    if Flowers26 >= 1500 and Flowers26 < 7500 then
-                        summonEvent:FireServer(unpack(summonArgs))
-                        task.wait(0.1)
-                    elseif Flowers26 >= 7500 then
-                        summonEvent:FireServer(unpack(summonArgs50))
-                        task.wait(0.1)
-                        clickCenterScreenSafe()
-                    else
-                        print("✅ มีของครบอยู่แล้ว (ไม่ล็อคเลเวล)")
-                        DelayCheck = 600
-                        task.wait(60)
-                        GoSpring()
-                    end
-                elseif level >= Config.LockLV then
-                    if Flowers26 >= 1500 and Flowers26 < 7500 then
-                        summonEvent:FireServer(unpack(summonArgs))
-                        task.wait(0.1)
-                    elseif Flowers26 >= 7500 then
-                        summonEvent:FireServer(unpack(summonArgs50))
-                        task.wait(0.1)
-                        clickCenterScreenSafe()
-                    else
-                        print("🔒 ถึงเลเวลที่ล็อคแล้ว อยู่เฉยๆ")
-                        DelayCheck = 600
-                        task.wait(60)
-                        GoSpring()
-                    end
-                else
-                    local memoria = hasMemoria()
-                    if memoria then
-                        print("📈 ได้ unit + Memoria แล้ว แต่เลเวล", level, "ยังไม่ถึง", Config.LockLV, "→ ฟาร์ม Story")
-                        local Add = {
-                            [1] = "AddMatch",
-                            [2] = {
-                                ["Difficulty"] = "Normal",
-                                ["Act"] = "Act1",
-                                ["StageType"] = "Story",
-                                ["Stage"] = "Stage1",
-                                ["FriendsOnly"] = false
-                            }
-                        }
-                        game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("LobbyEvent"):FireServer(unpack(Add))
-                        task.wait(2)
-                        local ST = {[1] = "StartMatch"}
-                        game:GetService("ReplicatedStorage"):WaitForChild("Networking"):WaitForChild("LobbyEvent"):FireServer(unpack(ST))
-                    else
-                        print("📈 ยังไม่ได้ Memoria → ไปฟาร์ม Spring เลย")
-                        task.wait(60)
-                        GoSpring()
-                    end
-                end
+            -- ============ Step 4: ได้ unit แล้ว → เช็ค LockLV ============
+            if Config.LockLV and level < Config.LockLV then
+                print("📈 ได้ unit แล้ว แต่เลเวล", level, "ยังไม่ถึง", Config.LockLV, "→ ฟาร์ม Story")
+                farmStory()
+                return
+            end
+
+            -- ============ Step 5: ครบทุกเงื่อนไข → สุ่มต่อหรืออยู่เฉยๆ ============
+            if Flowers26 >= 1500 and Flowers26 < 7500 then
+                print("🎲 ครบแล้ว สุ่ม 10 | Flowers26:", Flowers26)
+                summonEvent:FireServer(unpack(summonArgs))
+                task.wait(0.1)
+            elseif Flowers26 >= 7500 then
+                print("🎲 ครบแล้ว สุ่ม 49 | Flowers26:", Flowers26)
+                summonEvent:FireServer(unpack(summonArgs50))
+                task.wait(0.1)
+                clickCenterScreenSafe()
             else
-                if Flowers26 >= 1500 and Flowers26 < 7500 then
-                    print("❌ ไม่มี unit")
-                    summonEvent:FireServer(unpack(summonArgs))
-                    task.wait(0.1)
-                elseif Flowers26 >= 7500 then
-                    print("❌ ไม่มี unit")
-                    summonEvent:FireServer(unpack(summonArgs50))
-                    task.wait(0.1)
-                    clickCenterScreenSafe()
-                else
-                    print("❌ ไม่มี Flowers26 ไปฟาร์ม")
-                    task.wait(60)
-                    GoSpring()
-                end
+                local msg = Config.LockLV and "🔒 ถึงเลเวลที่ล็อคแล้ว" or "✅ มีของครบ"
+                print(msg .. " → ไปฟาร์ม Spring")
+                DelayCheck = 600
+                task.wait(60)
+                GoSpring()
             end
         end)
 
-        if not success then
-            warn("❌ Error ใน loop:", err)
-        end
-
+        if not ok then warn("❌ Error:", err) end
         task.wait(DelayCheck)
     end
 end)
