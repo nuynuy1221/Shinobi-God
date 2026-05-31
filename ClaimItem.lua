@@ -62,11 +62,10 @@ task.spawn(function()
     end
 
     local codes = {
-        "HeHasArrived",
-        "BumBum",
-        "Spring26",
-        "SorryForAutoSell",
-        "OopsiePoopsie2"
+        "Cog5th",
+        "223",
+        "Liberation",
+        "DMCAFree"
     }
 
     print("เริ่มรีดีมโค้ด...")
