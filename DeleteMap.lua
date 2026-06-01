@@ -13,6 +13,13 @@ if game.PlaceId == targetPlace then
 
     local skellingtons = map2:FindFirstChild("Skellingtons")
     if skellingtons then skellingtons:Destroy() end
+
+    -- ลบ madara ใน Giant madara
+    local giantMadara = map2:FindFirstChild("Giant madara")
+    if giantMadara then
+        local madara = giantMadara:FindFirstChild("madara")
+        if madara then madara:Destroy() end
+    end
 end
 
 task.wait(1)
