@@ -37,6 +37,16 @@ if game.PlaceId ~= targetPlace then
             end
         end
 
+        -- ล้าง NPC ยกเว้น "Bounty Hunter"
+        local npc = lobby:FindFirstChild("NPC")
+        if npc then
+            for _, obj in ipairs(npc:GetChildren()) do
+                if obj.Name ~= "Bounty Hunter" then
+                    obj:Destroy()
+                end
+            end
+        end
+
         for _, obj in ipairs(lobby:GetChildren()) do
             if obj.Name ~= "NPC"
             and obj.Name ~= "ChallengeBanner"
@@ -59,13 +69,54 @@ if game.PlaceId ~= targetPlace then
         floor.Parent = workspace
     end
 
+    local function deleteTargetObjects()
+        -- ลบ objects จาก InteractiveLobby
+        local interactiveLobby = workspace:FindFirstChild("InteractiveLobby")
+        if interactiveLobby then
+            local gamemodes = interactiveLobby:FindFirstChild("Gamemodes")
+            if gamemodes then
+                local play = gamemodes:FindFirstChild("Play")
+                if play then
+                    -- เก็บ Lights/Lighting ไว้ใน Play
+                    local keep = play:FindFirstChild("Lights / Lighting")
+                    for _, obj in ipairs(play:GetChildren()) do
+                        if obj ~= keep then obj:Destroy() end
+                    end
+                end
+                -- ลบ child ของ Gamemodes ยกเว้น Play
+                for _, obj in ipairs(gamemodes:GetChildren()) do
+                    if obj.Name ~= "Play" then obj:Destroy() end
+                end
+            end
+
+            -- ลบ Booths, Summon, pvp จาก InteractiveLobby
+            local toDeleteMain = {"Booths", "Summon", "pvp"}
+            for _, name in ipairs(toDeleteMain) do
+                local obj = interactiveLobby:FindFirstChild(name)
+                if obj then obj:Destroy() end
+            end
+        end
+
+        -- ลบ objects จาก Areas
+        local areas = workspace:FindFirstChild("Areas")
+        if areas then
+            local toDelete = {"BossEvent", "PVP", "Play", "Plaza", "Raid", "Summon", "Trophy", "Upgrades"}
+            for _, name in ipairs(toDelete) do
+                local obj = areas:FindFirstChild(name)
+                if obj then obj:Destroy() end
+            end
+        end
+    end
+
     cleanMainLobby()
     createInvisibleFloor()
+    deleteTargetObjects()
 
     -- กัน spawn ใหม่ทุก 10 วิ (เดิม 5 วิ — ไม่จำเป็นต้องถี่)
     task.spawn(function()
         while task.wait(10) do
             cleanMainLobby()
+            deleteTargetObjects()
         end
     end)
 end
