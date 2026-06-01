@@ -190,14 +190,14 @@ function DoEnemyIndexFlow_Sky()
             warn("❌ หา Lights ไม่เจอ ข้ามไป NPC เลย")
         end
 
-        -- ★ แก้ path NPC: InteractiveLobby แทน MainLobby + timeout ทุกจุด
+        -- ★ แก้ path NPC: MainLobby + Bounty Hunter
         local npc = workspace
-            :WaitForChild("InteractiveLobby", 10)
+            :WaitForChild("MainLobby", 10)
             :WaitForChild("NPC", 10)
-            :WaitForChild("Okabu", 10)
+            :FindFirstChild("Bounty Hunter")
 
         if not npc then
-            warn("❌ หา NPC Okabu ไม่เจอ")
+            warn("❌ หา NPC Bounty Hunter ไม่เจอ")
             return
         end
 
