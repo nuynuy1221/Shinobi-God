@@ -137,6 +137,127 @@ if APiratesWelcomeEvent then
     end
 end
 
+--================ MAIL (QUESTIONNAIRE + CLAIM) ===================
+task.spawn(function()
+    local GuiService = game:GetService("GuiService")
+    local VirtualInputManager = game:GetService("VirtualInputManager")
+    local MailEvent = Networking:WaitForChild("Inbox"):WaitForChild("MailEvent", 5)
+    if not MailEvent then
+        warn("⚠️ ไม่เจอ MailEvent — ข้ามการรับ Mail")
+        return
+    end
+
+    local ok, ClientReplicationHandler = pcall(function()
+        return require(ReplicatedStorage:WaitForChild("Modules"):WaitForChild("ClientReplicationHandler"))
+    end)
+    if not ok then
+        warn("⚠️ ไม่เจอ ClientReplicationHandler — ข้ามการรับ Mail")
+        return
+    end
+
+    local mailList = player.PlayerGui:FindFirstChild("Mails")
+        and player.PlayerGui.Mails:FindFirstChild("MailRoot")
+        and player.PlayerGui.Mails.MailRoot.Holder.CategoriesContainer.MailList
+    if not mailList then
+        warn("⚠️ ไม่เจอ MailList UI — ข้ามการรับ Mail")
+        return
+    end
+
+    local function clickMail(button)
+        button.Selectable = true
+        GuiService.SelectedCoreObject = button
+        VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Return, false, game)
+        VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Return, false, game)
+        task.wait(0.3)
+        GuiService.SelectedCoreObject = nil
+    end
+
+    local function fireMail(action, id, data)
+        local ok2, err = pcall(function()
+            if data then
+                MailEvent:FireServer(action, id, data)
+            else
+                MailEvent:FireServer(action, id)
+            end
+        end)
+        if ok2 then
+            print("✅ Mail", action, id)
+        else
+            warn("❌ Mail", action, err)
+        end
+        task.wait(0.5)
+    end
+
+    -- ดึง UUID ทั้งหมด
+    local allIDs = {}
+    for _, child in pairs(mailList:GetChildren()) do
+        local button = child:FindFirstChild("Main") and child.Main:FindFirstChild("Button")
+        if button then
+            clickMail(button)
+            task.wait(0.2)
+            local inbox = ClientReplicationHandler.GetData("Inbox")
+            if inbox and inbox.Mail and inbox.Mail.ID then
+                local id = inbox.Mail.ID
+                -- กันซ้ำ
+                local exists = false
+                for _, v in pairs(allIDs) do
+                    if v == id then exists = true break end
+                end
+                if not exists then
+                    print("Found Mail ID:", id)
+                    table.insert(allIDs, id)
+                end
+            end
+        end
+    end
+
+    print("Total Mail:", #allIDs)
+
+    -- Submit + Claim
+    for _, id in pairs(allIDs) do
+        fireMail("SubmitQuestionnaire", id, {
+            pirate_dynasty_characters_fun = { yes = true },
+            exclusive_units_returning = { yes = true },
+            better_macro_system = { yes = true },
+            why_like_pirate_dynasty = "It new gameplay that i didnt it will come",
+            pirate_dynasty_characters_unique = { yes = true },
+            pirate_dynasty_enjoyed_cog_5 = { yes = true },
+            pirate_dynasty_enjoyed_enemy_waves = { yes = true },
+            pirate_dynasty_well_balanced = { yes = true },
+            more_gamemodes = { yes = true },
+            pvp_revamp = { no = true },
+            likes_loadout_systems = { yes = true },
+            enjoy_pirate_dynasty = { yes = true },
+            pirate_dynasty_enjoyed_boss_fight = { yes = true },
+            pirate_dynasty_runs_well = { no = true },
+            plays_pvp = { no = true },
+            more_difficult_td = { yes = true },
+            phased_units = { yes = true },
+            vanguard_units_returning = { yes = true },
+            pirate_dynasty_too_hard = { no = true },
+            questionnaire_thoughts = "",
+            pirate_dynasty_enjoyed_capturing_points = { yes = true }
+        })
+
+        fireMail("SubmitQuestionnaire", id, {
+            funness = 8,
+            grind_length_satisfaction = 7,
+            new_unit_enjoyment = { strong = true },
+            favorite_part = { units = true },
+            dmca_ok = { yes = true },
+            happy_with_dmca_models = { some = true },
+            update_rating = 7,
+            prefer_lower_quality = { no = true },
+            unit_count_satisfaction = 4,
+            suggestions = ""
+        })
+
+        fireMail("ClaimMail", id)
+    end
+
+    print("✅ Mail: รับของครบทั้งหมด")
+end)
+
 print("✅ ClaimItem: รับของทั้งหมดเสร็จเรียบร้อย")
 
 --================ CHECK DAILY UI THEN REJOIN ===================
