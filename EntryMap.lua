@@ -291,7 +291,7 @@ local function hasUnclaimedMilestone()
     if not enemyGui then warn("❌ EnemyMilestones GUI ยังไม่โหลด") return false end
     local list = enemyGui:FindFirstChild("Holder") and enemyGui.Holder:FindFirstChild("List")
     if not list then warn("❌ หา List ไม่เจอ") return false end
-    for _, i in ipairs({4,6,7,10,11,12,13,14,15,16,17,18}) do
+    for _, i in ipairs({4,5,6,9,10,11,12,13,14,15,16,17,18}) do
         local item = list:FindFirstChild(tostring(i)) or list:GetChildren()[i]
         if item then
             local label = item:FindFirstChild("Button") and item.Button:FindFirstChild("Label")
